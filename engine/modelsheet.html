@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>body{margin:0;background:#fbf6ec}canvas{display:block}</style></head><body>
+<canvas id="c" width="2400" height="2000"></canvas>
+<script src="characters.js"></script>
+<script>
+const c = document.getElementById('c'), ctx = c.getContext('2d');
+const {drawCharacter, CAST, FACES} = PT;
+ctx.fillStyle = '#fbf6ec'; ctx.fillRect(0,0,2400,2000);
+ctx.font = 'bold 34px sans-serif'; ctx.fillStyle = '#2b1d1a';
+ctx.fillText('pastel-toon-shorts — original cast (front / side)', 40, 60);
+// ground line
+ctx.strokeStyle = '#e3d8c2'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(30, 900); ctx.lineTo(2370, 900); ctx.stroke();
+const ids = ['toby','nan','bramble','pip'];
+const H = 720;
+ids.forEach((id, i) => {
+  const x0 = 170 + i * 590;
+  drawCharacter(ctx, id, x0, 900, H, {face:'happy', armL:[0.2,0.1], armR:[0.2,0.1]});
+  drawCharacter(ctx, id, x0 + 260, 900, H, {view:'side', face:'neutral', armL:[0.1,0.2], armR:[-0.1,0.3]});
+  ctx.fillStyle = '#2b1d1a'; ctx.font = 'bold 30px sans-serif';
+  ctx.fillText(CAST[id].name, x0 - 60, 950);
+});
+ctx.font = 'bold 34px sans-serif';
+ctx.fillText('Toby — expressions', 40, 1030);
+const faces = ['neutral','happy','grin','shock','angry','worried','smug','talk'];
+faces.forEach((f, i) => {
+  const x = 120 + i * 285;
+  // crop to head: draw big and clip
+  ctx.save(); ctx.beginPath(); ctx.rect(x - 130, 1050, 260, 330); ctx.clip();
+  drawCharacter(ctx, 'toby', x, 2080, 1000, {face:f, talk:0.9, look: f==='smug'?[0.5,0]:[0,0]});
+  ctx.restore();
+  ctx.fillStyle = '#2b1d1a'; ctx.font = '26px sans-serif'; ctx.fillText(f, x - 40, 1410);
+});
+ctx.font = 'bold 34px sans-serif'; ctx.fillText('Poses', 40, 1470);
+ctx.strokeStyle = '#e3d8c2'; ctx.beginPath(); ctx.moveTo(30, 1960); ctx.lineTo(2370, 1960); ctx.stroke();
+const poses = [
+  ['toby', {view:'side', walk:0.9, face:'happy', armL:[-0.5,0.3], armR:[0.5,0.4]}, 'walk'],
+  ['toby', {face:'shock', squash:1.12, hop:30, armL:[2.4,0.3], armR:[2.4,0.3], look:[0,-0.3]}, 'double-take'],
+  ['toby', {face:'worried', armL:[0.5,1.7], armR:[0.5,1.7], headTilt:-0.12}, 'shrug'],
+  ['nan', {face:'angry', armL:[0.6,2.0], armR:[2.6,0.2]}, 'scold'],
+  ['bramble', {face:'smug', armL:[0.9,-1.9], armR:[0.9,-1.9]}, 'hands on hips'],
+  ['pip', {view:'side', face:'grin', walk:2.2, armL:[-0.9,0.4], armR:[1.0,0.6], hop:20}, 'run'],
+  ['toby', {face:'sleepy', squash:0.9, lean:0.08, headTilt:0.25, armL:[0.05,0], armR:[0.05,0]}, 'droop'],
+];
+poses.forEach(([id,p,label], i) => {
+  const x = 150 + i * 330;
+  drawCharacter(ctx, id, x, 1940, 420, p);
+  ctx.fillStyle = '#2b1d1a'; ctx.font = '26px sans-serif'; ctx.fillText(label, x - 60, 1990);
+});
+window.DONE = true;
+</script></body></html>

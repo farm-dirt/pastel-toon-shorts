@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>@font-face{font-family:Cap;src:url(assets/Poppins-Bold.ttf)}body{margin:0;background:#222}canvas{display:block}</style></head><body>
+<canvas id="c" width="3300" height="1920"></canvas>
+<script src="characters.js"></script><script src="backgrounds.js"></script>
+<script>
+const c = document.getElementById('c'), ctx = c.getContext('2d');
+const {drawCharacter, drawBG, shadow, GROUND} = PT;
+function caption(ctx, text, y) {
+  ctx.font = '84px Cap'; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+  ctx.lineWidth = 18; ctx.strokeStyle = '#2b1d1a'; ctx.strokeText(text, 540, y);
+  ctx.fillStyle = '#ffffff'; ctx.fillText(text, 540, y);
+}
+function frame(i, fn) { ctx.save(); ctx.translate(i * 1110, 0); ctx.beginPath(); ctx.rect(0,0,1080,1920); ctx.clip(); fn(); ctx.restore(); }
+document.fonts.load('84px Cap').then(() => {
+  ctx.fillStyle = '#222'; ctx.fillRect(0,0,3300,1920);
+  // 1: park wide two-shot
+  frame(0, () => {
+    drawBG(ctx, 'park', 0);
+    shadow(ctx, 380, GROUND+60, 120); drawCharacter(ctx, 'toby', 380, GROUND+60, 820, {face:'worried', armL:[0.5,1.7], armR:[0.5,1.7], look:[0.4,0]});
+    shadow(ctx, 760, GROUND+60, 110); drawCharacter(ctx, 'nan', 760, GROUND+60, 820, {view:'side', facing:-1, face:'angry', armL:[0.1,0.2], armR:[1.4,0.6]});
+    caption(ctx, 'nobody expected', 1330);
+  });
+  // 2: street close-up push-in (camera zoom 1.8)
+  frame(1, () => {
+    ctx.save(); ctx.translate(540, 960); ctx.scale(1.8, 1.8); ctx.translate(-540, -1050);
+    drawBG(ctx, 'street', 0);
+    drawCharacter(ctx, 'pip', 560, GROUND+60, 820, {face:'shock', armL:[2.3,0.4], armR:[2.3,0.4], hop:10, squash:1.06});
+    ctx.restore();
+    caption(ctx, 'THE PRICE', 1330);
+  });
+  // 3: shop medium
+  frame(2, () => {
+    drawBG(ctx, 'shop', 0);
+    shadow(ctx, 800, GROUND+60, 140); drawCharacter(ctx, 'bramble', 820, GROUND+60, 820, {face:'smug', armL:[0.9,-1.9], armR:[0.9,-1.9]});
+    shadow(ctx, 300, GROUND+60, 100); drawCharacter(ctx, 'toby', 300, GROUND+60, 820, {view:'side', face:'talk', talk:0.8, armL:[0.2,0.3], armR:[1.3,0.3]});
+    caption(ctx, 'was one coin', 1330);
+  });
+  window.DONE = true;
+});
+</script></body></html>

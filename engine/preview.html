@@ -1,0 +1,212 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap">
+<style>
+@font-face{font-family:Cap;src:url(assets/Poppins-Bold.ttf)}
+:root{--bg:#f6f1e7;--panel:#fffdf8;--ink:#2b1d1a;--mute:#7a6a62;--line:#e6dccb;--accent:#e9b33b;--accent2:#3d8c88;--danger:#d9534f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1916;--panel:#27221e;--ink:#f3ebe0;--mute:#b3a597;--line:#3d352e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1d1916;--panel:#27221e;--ink:#f3ebe0;--mute:#b3a597;--line:#3d352e;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line)}
+header h1{font:700 18px Cap,Poppins,system-ui,sans-serif;margin:0}
+header .meta{color:var(--mute);font-size:13px}
+main{display:grid;grid-template-columns:minmax(260px,440px) minmax(0,1fr);gap:20px;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1200px;margin:0 auto}
+@media (max-width:820px){main{grid-template-columns:minmax(0,1fr)}.stage{max-width:420px;margin:0 auto}}
+button:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+.stage{position:relative;background:#000;border-radius:18px;overflow:hidden;aspect-ratio:9/16;width:min(100%,calc((100dvh - 230px) * 9 / 16));min-width:min(100%,260px);max-width:100%;margin:0 auto;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.stage canvas{width:100%;height:100%;display:block}
+.safe{position:absolute;inset:0;pointer-events:none;display:none}
+.safe.on{display:block}
+.safe .b{position:absolute;background:rgba(255,40,40,.22);border:1px dashed rgba(255,60,60,.8)}
+.safe span{position:absolute;color:#fff;font-size:11px;background:rgba(0,0,0,.5);padding:1px 4px;border-radius:3px}
+.bigplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.15);cursor:pointer;border:0;width:100%}
+.bigplay span{width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:30px;color:#2b1d1a}
+.scene>div{min-width:0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+button,select{font:inherit;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:7px 12px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#2b1d1a;font-weight:700}
+button.on{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.time{font-variant-numeric:tabular-nums;color:var(--mute);font-size:13px;margin-left:auto}
+.timeline{position:relative;height:44px;margin-top:12px;border-radius:10px;overflow:hidden;background:var(--panel);border:1px solid var(--line);cursor:pointer;touch-action:none}
+.timeline .seg{position:absolute;top:0;bottom:0;border-right:1px solid rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#2b1d1a;overflow:hidden}
+.timeline .env{position:absolute;left:0;right:0;bottom:0;height:16px;opacity:.5}
+.timeline .head{position:absolute;top:0;bottom:0;width:3px;background:var(--danger);pointer-events:none}
+.scenes{display:flex;flex-direction:column;gap:10px}
+.scene{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:grid;grid-template-columns:64px 1fr;gap:12px}
+.scene.cur{outline:3px solid var(--accent)}
+.scene canvas{width:64px;height:114px;border-radius:8px;background:#000;cursor:pointer}
+.scene h3{margin:0;font-size:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{font-size:11px;padding:1px 8px;border-radius:99px;color:#2b1d1a}
+.scene p{margin:4px 0 6px;color:var(--mute);font-size:13px}
+.scene .say{font-style:italic;color:var(--ink)}
+textarea{width:100%;min-height:38px;font:inherit;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);color:var(--ink);resize:vertical}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.feedback{position:sticky;bottom:0;background:var(--bg);padding:10px 0;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2b1d1a;color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+#out{width:100%;min-height:90px;display:none;margin-top:6px}
+body.render header,body.render .side,body.render .controls,body.render .timeline,body.render .bigplay,body.render .safe{display:none!important}
+body.render{background:#000}body.render main{display:block;padding:0}
+body.render .stage{width:1080px;height:1920px;border-radius:0}
+</style>
+<header><h1 id="title">Preview</h1><span class="meta" id="meta"></span></header>
+<main>
+  <section>
+    <div class="stage" id="stage">
+      <canvas id="cv" width="1080" height="1920"></canvas>
+      <div class="safe" id="safe">
+        <div class="b" style="left:0;right:0;top:0;height:7%"><span style="left:6px;top:4px">top UI</span></div>
+        <div class="b" style="left:0;right:0;bottom:0;height:20%"><span style="left:6px;top:4px">title / channel / description</span></div>
+        <div class="b" style="right:0;width:13%;top:42%;bottom:20%"><span style="right:4px;top:4px">buttons</span></div>
+      </div>
+      <button class="bigplay" id="bigplay" aria-label="Play"><span>▶</span></button>
+    </div>
+    <div class="timeline" id="tl"><canvas class="env" id="envc" width="800" height="16"></canvas><div class="head" id="head"></div></div>
+    <div class="controls">
+      <button class="primary" id="play">▶ Play</button>
+      <button id="prevf" title="previous frame">◀︎ frame</button>
+      <button id="nextf" title="next frame">frame ▶︎</button>
+      <button id="loop">Loop scene</button>
+      <select id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option></select>
+      <button id="safeb">Safe zones</button>
+      <button id="capb" class="on">Captions</button>
+      <span class="time" id="time">0.00 s · f 0</span>
+    </div>
+  </section>
+  <section class="side">
+    <div class="scenes" id="scenes"></div>
+    <div class="feedback">
+      <button class="primary" id="copy">Copy my notes for Claude</button>
+      <button id="approve">✓ Approve — render final</button>
+      <textarea id="out" readonly></textarea>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<audio id="au" preload="auto"></audio>
+<script src="characters.js"></script>
+<script src="backgrounds.js"></script>
+<script src="engine.js"></script>
+<script src="custom.js" onerror="void 0"></script>
+<script src="data.js"></script>
+<script>
+const P = window.PROJECT; if (window.CUSTOM) P.custom = window.CUSTOM;
+const FPS = P.fps || 30, DUR = P.timing.dur, NF = Math.round(DUR * FPS);
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const isRender = new URLSearchParams(location.search).has('render');
+if (isRender) document.body.classList.add('render');
+
+// --------- render mode API (used by render.js) ---------
+window.renderAt = (t, type = 'image/png', q) => { PT.renderFrame(ctx, P, t); return cv.toDataURL(type, q); };
+window.lintProject = (step) => PT.lint(ctx, P, step);
+window.READY = Promise.all([document.fonts.load('80px Cap'), document.fonts.load('80px Poppins')]).catch(() => {}).then(() => { PT.renderFrame(ctx, P, 0); return true; });
+if (isRender) { /* nothing else */ } else {
+
+const $ = (id) => document.getElementById(id);
+const au = $('au'); if (P.audio) au.src = P.audio;
+$('title').textContent = P.title || 'Preview';
+$('meta').textContent = `${DUR.toFixed(2)} s · ${NF} frames · ${FPS} fps · 1080×1920 · ${P.scenes.length} scenes`;
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+const KEY = 'pts-notes-' + (P.id || P.title);
+let notes = {}; try { notes = JSON.parse(store.get(KEY) || '{}'); } catch (e) {}
+
+let t = 0, playing = false, loopScene = false, clockStart = 0, clockT0 = 0, rate = 1;
+const now = () => performance.now() / 1000;
+const curTime = () => {
+  if (!playing) return t;
+  if (P.audio && !au.paused && au.readyState >= 2) return au.currentTime;
+  return clockT0 + (now() - clockStart) * rate;
+};
+function draw() {
+  const f = Math.min(NF - 1, Math.floor(t * FPS + 1e-6));
+  PT.renderFrame(ctx, P, f / FPS);
+  $('time').textContent = `${t.toFixed(2)} s · f ${f}`;
+  $('head').style.left = (t / DUR * 100) + '%';
+  const si = PT.sceneAt(P, t);
+  document.querySelectorAll('.scene').forEach((el, i) => el.classList.toggle('cur', i === si));
+}
+function seek(nt) { t = Math.max(0, Math.min(DUR - 1e-3, nt)); if (P.audio) au.currentTime = t; clockT0 = t; clockStart = now(); draw(); }
+function setPlay(p) {
+  playing = p; $('play').textContent = p ? '❚❚ Pause' : '▶ Play'; $('bigplay').style.display = p ? 'none' : 'flex';
+  clockT0 = t; clockStart = now();
+  if (P.audio) { if (p) { au.currentTime = t; au.playbackRate = rate; au.play().catch(() => {}); } else au.pause(); }
+  if (p) requestAnimationFrame(loop);
+}
+function loop() {
+  if (!playing) return;
+  t = curTime();
+  const si = PT.sceneAt(P, t), sc = P.scenes[si];
+  if (loopScene && (t >= sc.end - 1e-3 || t < sc.start)) { seek(curLoop.start); }
+  if (t >= DUR) { t = DUR - 1e-3; setPlay(false); }
+  draw(); requestAnimationFrame(loop);
+}
+let curLoop = P.scenes[0];
+$('play').onclick = () => setPlay(!playing);
+$('bigplay').onclick = () => setPlay(true);
+$('prevf').onclick = () => { setPlay(false); seek(t - 1 / FPS); };
+$('nextf').onclick = () => { setPlay(false); seek(t + 1 / FPS); };
+$('loop').onclick = () => { loopScene = !loopScene; $('loop').classList.toggle('on', loopScene); curLoop = P.scenes[PT.sceneAt(P, t)]; };
+$('speed').onchange = (e) => { rate = +e.target.value; au.playbackRate = rate; clockT0 = t; clockStart = now(); };
+$('safeb').onclick = () => { $('safe').classList.toggle('on'); $('safeb').classList.toggle('on'); };
+$('capb').onclick = () => { P.showCaptions = P.showCaptions === false; $('capb').classList.toggle('on', P.showCaptions !== false); draw(); };
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'TEXTAREA') return;
+  if (e.code === 'Space') { e.preventDefault(); setPlay(!playing); }
+  if (e.code === 'ArrowLeft') { setPlay(false); seek(t - 1 / FPS); }
+  if (e.code === 'ArrowRight') { setPlay(false); seek(t + 1 / FPS); }
+});
+
+// timeline
+const tl = $('tl');
+const LOCCOL = { park: '#d4e88f', street: '#bfe3d8', shop: '#f4b9aa', kitchen: '#b9d3ea', night: '#8d89c0' };
+P.scenes.forEach((s, i) => {
+  const d = document.createElement('div'); d.className = 'seg';
+  d.style.left = (s.start / DUR * 100) + '%'; d.style.width = ((s.end - s.start) / DUR * 100) + '%';
+  d.style.background = LOCCOL[s.location] || '#ddd'; d.textContent = i + 1; tl.insertBefore(d, $('head'));
+});
+const ec = $('envc').getContext('2d'), env = P.timing.env || [];
+ec.fillStyle = '#2b1d1a'; env.forEach((v, i) => { const x = i / env.length * 800; ec.fillRect(x, 16 - v * 16, 800 / env.length + 0.5, v * 16); });
+const scrub = (e) => { const r = tl.getBoundingClientRect(); seek(((e.clientX - r.left) / r.width) * DUR); };
+let drag = false;
+tl.addEventListener('pointerdown', (e) => { drag = true; tl.setPointerCapture(e.pointerId); if (playing) setPlay(false); scrub(e); });
+tl.addEventListener('pointermove', (e) => { if (drag) scrub(e); });
+tl.addEventListener('pointerup', () => { drag = false; });
+
+// scene cards
+const list = $('scenes');
+P.scenes.forEach((s, i) => {
+  const el = document.createElement('div'); el.className = 'scene';
+  const th = document.createElement('canvas'); th.width = 216; th.height = 384;
+  el.appendChild(th);
+  const body = document.createElement('div');
+  const say = (P.timing.sentences || []).filter((x) => x.s < s.end && x.e > s.start).map((x) => x.text).join(' ');
+  body.innerHTML = `<h3>Scene ${i + 1} <span class="chip" style="background:${LOCCOL[s.location] || '#ddd'}">${s.location}</span>
+    <span style="color:var(--mute);font-weight:400">${s.start.toFixed(2)}–${s.end.toFixed(2)} s${s.transition && s.transition !== 'cut' ? ' · ' + s.transition : ''}</span></h3>
+    <p>${s.desc || ''}</p>${say ? `<p class="say">“${say}”</p>` : ''}`;
+  const row = document.createElement('div'); row.className = 'row';
+  const pb = document.createElement('button'); pb.textContent = '▶ Play this scene';
+  pb.onclick = () => { curLoop = s; loopScene = true; $('loop').classList.add('on'); seek(s.start); setPlay(true); };
+  row.appendChild(pb); body.appendChild(row);
+  const ta = document.createElement('textarea'); ta.placeholder = 'Change request for this scene (optional)…';
+  ta.value = notes[s.id || i] || ''; ta.oninput = () => { notes[s.id || i] = ta.value; store.set(KEY, JSON.stringify(notes)); };
+  body.appendChild(ta); el.appendChild(body); list.appendChild(el);
+  th.onclick = () => { setPlay(false); seek(s.start + 0.01); };
+  // thumbnail = real frame from the middle of the scene
+  const tc = th.getContext('2d'); PT.renderFrame(ctx, P, (s.start + s.end) / 2); tc.drawImage(cv, 0, 0, 216, 384);
+});
+
+function toast(msg) { const el = $('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 1800); }
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); toast('Copied — paste it to Claude'); }
+  catch (e) { const o = $('out'); o.style.display = 'block'; o.value = text; o.select(); toast('Select the text below and copy it'); }
+}
+$('copy').onclick = () => {
+  const lines = P.scenes.map((s, i) => [s, i]).filter(([s, i]) => (notes[s.id || i] || '').trim())
+    .map(([s, i]) => `- Scene ${i + 1} (${s.start.toFixed(2)}–${s.end.toFixed(2)} s, ${s.location}): ${notes[s.id || i].trim()}`);
+  copy(lines.length ? `Preview feedback for "${P.title}":\n${lines.join('\n')}` : `Preview feedback for "${P.title}": no notes yet.`);
+};
+$('approve').onclick = () => copy(`Preview approved for "${P.title}" — please render the final MP4.`);
+Promise.all([document.fonts.load('80px Cap'), document.fonts.load('80px Poppins')]).catch(() => {}).then(() => seek(0));
+}
+</script>
