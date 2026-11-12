@@ -286,6 +286,38 @@
     ctx.restore();
   }
 
+
+  // ---------- silent subscribe CTA (project.cta = {s, e, tap, text}) ----------
+  // A mid-video button that pops in, gets tapped by a cartoon hand and turns into SUBSCRIBED.
+  // Never at the end: the ending must stay a clean loop back to frame 0.
+  function drawCTA(ctx, c, t) {
+    const lt = t - c.s, dur = c.e - c.s; if (lt < 0 || lt > dur) return;
+    const k = lt < 0.25 ? EASE.back(clamp01(lt / 0.25)) : lt > dur - 0.2 ? 1 - clamp01((lt - (dur - 0.2)) / 0.2) : 1;
+    const tap = c.tap ?? 0.9, done = lt >= tap, press = Math.abs(lt - tap) < 0.08 ? 0.92 : 1;
+    const y = c.y || 1440, label = c.text || 'Subscribe for more';
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.translate(W / 2, y); ctx.scale(k * press, k * press);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    ctx.font = '44px Cap, Poppins, sans-serif'; ctx.lineWidth = 12; ctx.strokeStyle = PT.INK; ctx.strokeText(label, 0, -105);
+    ctx.fillStyle = '#ffffff'; ctx.fillText(label, 0, -105);
+    const w = 470, h = 116;
+    ctx.beginPath(); ctx.roundRect(-w / 2, -h / 2, w, h, h / 2);
+    ctx.fillStyle = done ? '#8a8a96' : '#e53935'; ctx.fill(); ctx.lineWidth = 9; ctx.stroke();
+    ctx.font = '58px Cap, Poppins, sans-serif'; ctx.fillStyle = '#ffffff';
+    ctx.fillText(done ? 'SUBSCRIBED' : 'SUBSCRIBE', done ? 0 : 30, 4);
+    if (!done) { ctx.beginPath(); ctx.moveTo(-205, -24); ctx.lineTo(-163, 0); ctx.lineTo(-205, 24); ctx.closePath(); ctx.fill(); ctx.lineWidth = 5; ctx.stroke(); }
+    ctx.restore();
+    if (lt > 0.3 && lt < dur - 0.2) { // cartoon mitten hand taps the button
+      const a = clamp01((lt - 0.3) / (tap - 0.3)), b = clamp01((lt - tap - 0.35) / 0.4);
+      const hx = lt < tap ? 820 - 300 * EASE.back(a) : 520 + 300 * b;
+      const hy = y + 120 - (lt < tap ? 70 * a : 70 * (1 - b));
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+      PT.limb(ctx, [[hx + 120, hy + 220], [hx + 10, hy + 30]], '#e9b33b', 30, 6);
+      PT.ellipse(ctx, hx, hy, 38, 38); PT.fillStroke(ctx, '#f7d3b2', 6);
+      PT.ellipse(ctx, hx - 22, hy - 40, 13, 28, -0.4); PT.fillStroke(ctx, '#f7d3b2', 5);
+      ctx.restore();
+    }
+  }
+
   // ---------- public: one full frame ----------
   function sceneAt(project, t) {
     const S = project.scenes; let i = S.findIndex((s) => t >= s.start && t < s.end);
@@ -306,6 +338,7 @@
       TRANS[tr](ctx, drawA, drawB, u);
     } else drawScene(ctx, project, sc, t);
     drawCaption(ctx, project, t);
+    if (project.cta) drawCTA(ctx, project.cta, t);
     ctx.restore();
   }
 

@@ -23,6 +23,13 @@ syllable-proportional breaks — check the report and adjust captions by ear in 
 - Music "stops" (`music.stops`) drop the bed for a gag beat and fade back in over 0.15 s.
 - Available SFX: `python3 tools/audio.py --list`.
 
+## Preview page
+The preview loops at the end (like a Short), has a ⛶ Full screen button (double-click / F also work;
+tap the video to play/pause in full screen), and its **Send notes to Claude** / **✓ Approve** buttons
+save `{kind, text, title, at}` to the published page's db at `feedback/latest` (declare
+`{db:{}, user:{}}` once after the first publish). Opened from disk or without db they fall back to
+copying the text to the clipboard. The user then types "check" and Claude reads that document.
+
 ## Render & export
 - Default: 1080×1920, 30 fps, H.264 High, CRF 16 medium, yuv420p, GOP 30, `+faststart`, AAC 192k.
 - 30 fps is right for this style (flat cartoon, smooth camera). Use 24 fps only if the user wants

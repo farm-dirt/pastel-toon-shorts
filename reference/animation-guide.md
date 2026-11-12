@@ -68,3 +68,7 @@ view) switch at their key. `visible:false` hides an actor/prop. Props: coin, box
 bulb, heart, phone, chest, cup — or custom ones in `custom.js`:
 `window.CUSTOM = { props: { shovel(ctx, size, state, t) { /* draw at 0,0 */ } } }`.
 `hold: "who.L|R"` glues a prop to a hand (drawn on top). Sizes are world px.
+
+Top-level `"cta": {"s", "e", "tap", "text", "y"}` = the silent subscribe button (screen space, drawn after
+captions): pops in at `s`, a hand taps it `tap` s later and it reads SUBSCRIBED, gone at `e`. Default
+text "Subscribe for more", y 1440 (above the bottom YouTube UI). Place it mid-video, never at the end.
