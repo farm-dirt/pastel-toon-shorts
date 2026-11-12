@@ -195,17 +195,31 @@ Deliver: send the MP4 AND the thumbnail(s) with SendUserFile; tell the user in o
 it (YouTube app → when uploading the Short, tap the thumbnail/cover → add from gallery); if a folder on their computer is connected, copy the
 whole project there (final MP4 at `<folder>/<slug>/final/<slug>.mp4`, double-click to play).
 **Upload text (send with the MP4, ready to copy):**
-- **Title hook:** 3 options, each ≤ 60 characters (ideally ≤ 45 so it isn't cut off on phones).
-  Each must make people curious (a question, a surprising claim, or a "wait, what?" fact) without
-  giving away the twist, and must match the video's hook so it doesn't feel like clickbait.
-  Mark your pick and say why in one line.
+- **Title = a hook (the most important upload text).** On Shorts the title's job is to stop the
+  scroll, not to label the video. Rules:
+  1. Lead with the hook: the strangest, scariest or funniest idea in the first 3-5 words. Never start
+     with the series name, "The Legend of…", "The Story of…", a greeting or the date.
+  2. ≤ 45 characters total (60 hard max) so nothing important is cut off on phones. Put the one word a
+     viewer would search (the creature's name, "Filipino folklore") in the first 40 characters when it
+     doesn't spoil the twist.
+  3. Write 5 options using at least 3 of these proven patterns:
+     Warning ("Never Catch THIS Firefly at Night") · Wrong assumption ("That Glow Isn't a Firefly…") ·
+     Second person ("If Your Tree Smells Like Smoke, RUN") · Impossible fact ("His Cigar NEVER Burns Out") ·
+     Mini-story ("He Caught the Wrong Firefly 😳") · Precise question ("Why Do Lolas Avoid Balete Trees?").
+  4. Title, thumbnail text and the video's first line make the SAME promise from 3 angles with
+     DIFFERENT words. Never reveal the twist or punchline.
+  5. At most one word in CAPS, at most one emoji (at the end), "…" allowed for a cliffhanger; no "!!!".
+     Curiosity is fine, a broken promise is not (YouTube treats misleading titles as a policy problem).
+  6. Score every option /10 on: stops the scroll · clear in 1 second · makes you need the answer ·
+     honest to the video. Show the scores in a small table, mark your pick, say why in one line.
 - **Description hook:** the first 1-2 lines are the hook (they show before "more"), then 2-3
   short lines of extra context or a fun fact that's true (checked on the web, mention a source or
   "versions differ by region" when relevant), then a comment question that invites an answer
   (e.g. "What's your province's version of this creature?" or "Which country are you watching from?"),
   then 3-5 hashtags (always include #shorts, plus topic tags like #philippines #folklore). Only the
   first 3 hashtags show above the title.
-- **Title** follows the channel series template (see "Series identity") so viewers recognise the series.
+- **Series name** goes at the END of the title (" | Pinoy Creature Files") only if the total stays ≤ 60,
+  otherwise in the first line of the description — never in front of the hook.
 - **Upload settings to tell the user:** Audience = answer honestly; this series is written for
   teens/adults, so normally "No, it's not made for kids" (YouTube can change it, and Made for Kids turns
   off comments and personalised ads). Altered/synthetic content = No (fully animated). Use only the
@@ -225,9 +239,9 @@ Also save them to `final/<slug>_upload.txt`.
 One line of notes + offer the next idea. Update nothing in this skill unless the user asks.
 
 ## Series identity (set once, then reuse)
-The first time this section is used, propose 2-3 series names and title templates (e.g. "Pinoy
-Creature Files: ___", "Philippine Legends: ___ 😱") and let the user pick; then keep the same name,
-title template, intro hook-text style and thumbnail look for every short. Recognisable series grow
+The first time this section is used, propose 2-3 series names (e.g. "Pinoy Creature Files") and let
+the user pick; then keep the same name, title end-tag (" | Pinoy Creature Files" — the hook always comes
+first, see the title rules in Phase 9), intro hook-text style and thumbnail look for every short. Recognisable series grow
 faster than one-off videos.
 
 ## Avoid "inauthentic / mass-produced" content (YouTube policy, July 2025)
