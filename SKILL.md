@@ -116,6 +116,19 @@ The voice-over is the master clock: scene cuts go on real pauses (`timing.senten
 2. **Captions**: start from `timing.captions`, fix names/casing, wrap 1-2 key words per
    sentence in `*stars*` (yellow highlight). Put the edited list in `project.json` as `"captions"`.
 3. **SFX & music** cues in `project.json` (`python3 ~/pts/tools/audio.py --list` shows SFX names).
+   **Recorded sounds & music (user's library, copied from paper-diorama-shorts 14 Nov 2026)** live in
+   `~/pts/assets/sfx/` and `~/pts/assets/music/` (used by file name; `audio.py --list` shows them).
+   Music: `"music": {"track": NAME, "start": S, "stops": [[a, b]]}` (short tracks loop; same ducking).
+   Tracks: `calm_ambient`, `celtic_harp` (sad/tender), `medieval_ambient` (old villages, royalty),
+   `dark_mystery_piano`, `cinematic_tension`, `epic_action`, `dark_fantasy_synth`, `dark_ambient`,
+   `horror_atmosphere` (aswang/creature legends), `greek_folk`. No `track` = the cartoon synth bed
+   (still best for light comedy). Recorded SFX: `impact_hit`, `low_hit`, `deep_boom`, `suspense_sting`,
+   `riser`, `whoosh_cinematic`, `magic_sparkle`, `sparkle_whoosh`, `bell`, `falling_whistle`, `pop`
+   (recorded; synth is `pop_synth`), `thunder`, `rocks`, `water_splash`, `door_creak`,
+   `footsteps_gravel`, `monster_growl`, `heartbeat`, `sword_clash`, paper sounds, and quiet ambiences
+   (`wind`, `wind_howl`, `fire_crackle`, `night_ambience`, `horror_drone`: `gain` 0.3-0.5 + `dur` + fades).
+   Cue options: `{"t", "name", "gain", "dur", "fadeIn", "fadeOut"}`. Cartoon synth sounds (`boing`,
+   `bonk`, `wahwah`, `tada`…) still work and suit gags. If `--list` shows no recorded sounds, `git -C ~/pts pull`.
    **Subscribe CTA (every short):** `"cta": {"s": S, "e": S + 2.6, "tap": 0.95, "text": "More <series name>"}`
    with S at about 45-60 % of the video, over a calm beat (never in the first 3 s, the payoff, or the last 3 s).
    The engine draws it silently above the bottom YouTube UI (y 1440): it pops in, a cartoon hand taps it,
