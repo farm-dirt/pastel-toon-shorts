@@ -65,21 +65,34 @@ twist/payoff, button ending, optional CTA. Per section: narration, est. duration
 - **Re-hook every ~8-10 s**: a new question, reveal or reversal ("But that wasn't the scary part.").
 - **Show, don't narrate**: the narrator sets up, the picture delivers the joke or scare. Never narrate an
   emotion the face already shows. Mark at least 2 moments where the picture says something the narration doesn't.
-- **1-3 short in-character lines** (1-5 words each, e.g. a gasp, "HEHEHE", "Ay, susmaryosep!") so the cast
-  feel alive and the short isn't a pure read-aloud. Give them to the user to record/generate as separate clips
-  with a different voice, or as labelled speakers in ElevenLabs.
+- **Narration only — one voice, no dialogue.** The narrator is the ONLY voice in the short: no
+  in-character lines, no quoted speech, no second speaker, no separate clips (user rule). Keep the cast
+  alive with the picture instead: faces, gasps drawn as reactions, sound effects, and on-screen text
+  (e.g. a big "HEHEHE" or "!!" pop-up). Write what a character would say as narration
+  ("Pip spots something in the sky."). Never use `speaks` on actors.
 - **No "like and subscribe" outro.** End on the twist or a line that loops into the first line; the
   last 0.3 s cuts straight back so the replay feels seamless. The call to action is a silent
   mid-video subscribe button instead (`project.cta`, Phase 6 step 3) — it never touches the ending.
 - **Tone for teens/adults** (witty or spooky, "folklore explained"), not a children's moral lesson —
   this is who the channel is for, and it keeps the content honestly "not made for kids".
-**Voice-over tips to include (ElevenLabs v3):** pick an expressive voice, stability "Natural" or
-"Creative", use audio tags like [whispers] [laughs] [gasps] sparingly, "…" for a pause, CAPS for one
-stressed word. Suggest (once, not every time) that the user's own voice or a clone of it stands out
-from the wave of identical AI-narrated folklore Shorts.
+**Voice + settings to suggest every time (the user is on FREE ElevenLabs):**
+- **Voice:** the channel's narrator is **Jon – Catalyst**; keep the same voice on every short so viewers
+  recognise the series. Only suggest another voice if the user asks (then: a calm, clear storyteller voice
+  with a low, steady tone, not a hyped "YouTube" voice).
+- **Settings (free model sliders):** Speed ≈ 0.90 (slightly slower) · Stability ≈ 40-45 % (expressive but
+  not random) · Similarity ≈ 75 % (stays sounding like Jon) · Style Exaggeration 0-10 % (higher adds odd
+  accents/crackles) · Speaker Boost on if shown. Give these as a small table with a one-line "why" each.
+- **No audio tags** ([whispers], [laughs]…): free voices may read them aloud. Get emotion from the
+  writing only: "…" for a pause or slow-down, CAPS on at most one stressed word per line, short sentences.
+  Avoid sounds the voice mispronounces ("Hmp", "Ugh", "Pssst").
+- Keep the narration short enough to regenerate 2-3 times on free credits; tell the user they can
+  regenerate just one bad sentence and upload both files (you splice it in).
+- If 2-3 tries still sound flat, nudge Stability down 5 %; if lines sound weird or random, nudge it up 5 %.
+- Mention once (not every time) that their own voice or a clone stands out from the many
+  identical AI-narrated folklore Shorts.
 Save it right away as `script/script.md` (full) and `script/script.txt` (narration only, exactly
 as it will be spoken). Then send ONE message containing: the script, the narration-only text in a
-code block ready to copy, and short voice-over instructions (ElevenLabs or their own voice,
+code block ready to copy (no tags in it), and the voice + settings above (ElevenLabs or their own voice,
 MP3/WAV, read the narration exactly, small pauses between sentences). End with:
 "Record it and upload the file, or tell me what to change in the script."
 Do NOT ask for separate script approval: uploading the voice-over counts as approving the script.
@@ -104,6 +117,16 @@ The voice-over is the master clock: scene cuts go on real pauses (`timing.senten
    **Directing rules (from the user's animation-direction brief):**
    - **Frame 0 is the hook**: the creature/strangest moment is already on screen at t = 0 — no fade-in,
      no empty establishing shot, no logo. Hook text (2-4 words, big) shows 0-2 s.
+   - **YouTube Shorts safe zone (user rule, Nov 2026).** The Shorts app draws its buttons and text
+     ON TOP of the video, so anything important there is hidden. In the final 1080×1920 picture
+     (screen position after the camera, not world coordinates), keep every face, the key
+     creature/prop/clue, hook text and the CTA inside the **safe box x 48-888, y 180-1500**. No-go
+     areas: the **right 192 px** (x > 888: like, dislike, comment, share, remix buttons), the
+     **bottom 420 px** (y > 1500: title, channel name, Subscribe, audio), the **top 180 px** (y < 180:
+     search and menu icons). Treat y 1250-1500 as a caution strip (long titles grow into it): no faces
+     or reveal objects there. Only scenery, ground, feet and blurred foreground may run into the
+     no-go areas. If a character stands at the right edge of the shot or an object sits on the
+     ground, move it, zoom in or tilt the camera until it lands inside the box.
    - Something visibly changes at least every 1.5 s (pose, face, camera move, prop, fx) — no dead stretch.
    - No actor keeps the same `face` for a whole scene longer than ~2.5 s; each beat gets a reaction.
    - Hold key poses/reactions ~0.3 s longer than feels natural; never snap a strong expression straight back to neutral.
@@ -127,7 +150,11 @@ The voice-over is the master clock: scene cuts go on real pauses (`timing.senten
    (recorded; synth is `pop_synth`), `thunder`, `rocks`, `water_splash`, `door_creak`,
    `footsteps_gravel`, `monster_growl`, `heartbeat`, `sword_clash`, paper sounds, and quiet ambiences
    (`wind`, `wind_howl`, `fire_crackle`, `night_ambience`, `horror_drone`: `gain` 0.3-0.5 + `dur` + fades).
-   Cue options: `{"t", "name", "gain", "dur", "fadeIn", "fadeOut"}`. Cartoon synth sounds (`boing`,
+   Cue options: `{"t", "name", "gain", "dur", "fadeIn", "fadeOut"}`.
+   **Never use `dark_click`** (user rule, Nov 2026): it is a 9.5 s low rumble that drones under several scenes; the user
+   disliked it. **Always give recorded SFX a `dur` + `fadeOut`** (about 0.8-1.6 s): many files are long recordings
+   (`magic_sparkle` 20 s, `bell` 5.3 s, `suspense_sting` 4.9 s, `impact_hit` 3 s) and otherwise keep playing under the next scenes.
+   Check a file's length with `ffprobe` before using a sound you haven't used before. Cartoon synth sounds (`boing`,
    `bonk`, `wahwah`, `tada`…) still work and suit gags. If `--list` shows no recorded sounds, `git -C ~/pts pull`.
    **Subscribe CTA (every short):** `"cta": {"s": S, "e": S + 2.6, "tap": 0.95, "text": "More <series name>"}`
    with S at about 45-60 % of the video, over a calm beat (never in the first 3 s, the payoff, or the last 3 s).
@@ -144,7 +171,9 @@ moments (see production-guide "spot check") and LOOK at them yourself before sho
 Always include t = 0.0 in the stills. **Audience-eye review** before the preview: (1) Would a stranger
 swiping fast stop at frame 0? (2) Any stretch > 1.5 s where nothing changes? (3) Any shot that only
 illustrates the narration literally with no extra joke/feeling? (4) Same face held too long?
-(5) Does the end cut cleanly back into the start? Fix what fails, then publish.
+(5) Does the end cut cleanly back into the start? (6) Would the YouTube buttons or title cover a
+face, the reveal or any text in any still (check against the safe box x 48-888, y 180-1500)?
+Fix what fails, then publish.
 
 ### Phase 7 — Browser preview  ⛔ approval required
 Copy the preview folder into the working directory (the publisher only attaches files from there),
@@ -155,38 +184,43 @@ declare `{"db": {}, "user": {}}` on it — that is what lets the preview's butto
 Republish the SAME artifact (slug + base_version) on every revision, so the link never changes. Also copy
 the preview folder to the user's computer if a folder is connected (opening `index.html` works offline).
 Tell the user: press ▶ (it loops like a Short), ⛶ Full screen (or double-click / F), "Play this scene"
-to loop one scene, type change requests in the boxes, then press **Send notes to Claude** or
+to loop one scene. The video stays still while the scene list scrolls; click any scene card to jump the
+video there. While watching, press **⏱ Mark** (or the M key; it also works in full screen) at any moment
+that needs a fix: marks show as red ticks on the timeline and as chips on their scene card (click a chip
+to go back to it, ✕ to remove) and are sent with the notes. Type change requests in the boxes, then press **Send notes to Claude** or
 **✓ Approve** and just type **"check"** in the chat. A page cannot message the chat by itself, so never
 promise that the buttons process on their own.
 **When the user says "check"** (or "done", "sent"): read `feedback/latest` with the artifact db read tool
 (db_get on the preview's slug) and act on its `text`: kind `notes` → do the revisions; kind `approve` →
 Phase 8 (with the thumbnail they named, or ask A/B in the same reply). If it is missing or older than
 their last message, the page fell back to copying — ask them to paste the text instead.
+**Marks in the feedback** look like `Scene 5 (…) [marked at 12.34 s]: note`. Render a still at each
+marked time and LOOK at it before changing that scene. A mark with no note ("marked, no note yet")
+means "something is off here": look at that exact moment, say in one line what you think is wrong,
+fix it if it's clear, otherwise ask.
 **Thumbnail (made at the same time, so no extra waiting):** design 2 NEW thumbnail images.
 NEVER use a frame captured from the video — each thumbnail is its own composition made to sell
 this short at phone size:
-- **Concept first** (one idea each, matching the hook, never giving away the twist). Good pair:
-  A = the "impossible" image of the story (the creature/transformation/weird object, made huge),
-  B = the strongest emotion (a character's big exaggerated reaction + the key object next to them).
-- **Compose it fresh** with the same engine so it stays on-model: 1-2 characters max, posed and
-  framed bigger than in the video (face ≈ 25-35 % of the frame height), extreme expression, the key
-  prop large and readable, a simple bold background (the location's hue, optionally a soft radial
-  burst or vignette, no clutter), strong contrast, no captions. New poses, props, angles and
-  arrangements that never appear in the video are encouraged.
-- **How:** make a temp copy of the project (`/tmp/thumb_A/project-files/` with project.json,
-  timing.json, custom.js) whose `scenes` is ONE new scene (start 0, the thumbnail layout) and
-  `captions: []`; run build_preview on it and render `renderAt(0.5,'image/png')` at 1080×1920 with
-  the same Playwright method as the production-guide spot check. Add any thumbnail-only props
-  (burst, big arrow, glow) to that temp custom.js, never to the video's.
-- Before showing, scale each to ~200 px wide and LOOK: the idea must read in under a second. Add a short title on top with ffmpeg `drawtext` using
-`assets/Poppins-Bold.ttf`: 2-5 words, ALL CAPS, big (≈120-150 px), white with a thick dark outline,
-one key word in yellow, placed in the top third so it never covers a face. The words must make
-someone curious, not repeat the full title. Save as `final/thumbnail_A.png` and `thumbnail_B.png`,
-LOOK at both yourself, then send them with SendUserFile together with the preview link and ask:
-"Which thumbnail, A or B? (or tell me what to change)". Approving the preview + picking a
-thumbnail happen in the same reply.
+- A = the "impossible" image (the creature/transformation/weird object, huge);
+  B = the strongest emotion (a character's big reaction + the key object). Never give away the twist.
+- Compose with the engine so it stays on-model: write a one-scene JSON (`location`, `camera`
+  zoomed in 1.2-1.5, 1-2 actors with `h` ~1000 and an extreme pose/face, key prop large; simple bold
+  background, no clutter) and save it as `project-files/thumb_A.json` / `thumb_B.json`. Thumbnail-only
+  props (burst, big arrow, glow) go in a `thumb_custom.js` next to those JSONs, never in the video's
+  custom.js. Then run
+  `python3 ~/pts/tools/thumb.py ~/shorts/<slug> --thumb project-files/thumb_A.json --title "2-5 WORDS" --hl KEYWORD --out final/thumbnail_A.png`
+  (renders at 1080×1920 with no captions/CTA, then adds the title: Poppins Bold, ALL CAPS, white with a
+  thick dark outline, the --hl word in yellow, top third). The project's own files are never touched.
+- Thumbnails follow the same safe box: main subject inside x 48-888, nothing important below y 1500
+  (the Shorts shelf and feed draw the title over the bottom).
+- Scale each to ~200 px wide and LOOK: the idea must read in under a second; the title (top third,
+  never over a face) must make someone curious, not repeat the full title.
+Ask together with the preview link: "Which thumbnail, A or B? (or tell me what to change)".
+Send both thumbnails with SendUserFile together with the preview link. Approving the preview +
+picking a thumbnail happen in the same reply.
 Revisions: change only the scenes named; rebuild → lint → republish. For a quick moving check of
-one scene you may also render just that range: `node ~/pts/tools/render.js DIR --from 4.9 --to 7.3 --out /tmp/clip.mp4`.
+one scene you may also render just that range: `node ~/pts/tools/render.js DIR --from 4.9 --to 7.3 --out /tmp/<slug>-scene<N>-haeXclips.mp4`.
+**Every MP4 sent to the user carries the channel tag `-haeXclips` (user rule)**: finals, test clips, re-renders.
 
 ### Phase 8 — Final render (only after explicit approval)
 ```bash
@@ -200,13 +234,15 @@ python3 ~/pts/tools/qa.py ~/shorts/<slug> ~/shorts/<slug>/final/<slug>.mp4
 ```
 All lines must PASS. Open `scenes/contact_sheet.jpg` and check: same character designs in
 every shot, captions readable and not on faces, nothing cut off, no empty/odd frames. Fix → re-render → re-QA.
-Re-render the chosen thumbnail design (from its own thumbnail scene, in case characters or props
-changed during revisions) and save it as
-`final/<slug>_thumbnail.png`; also save a 1280×720 version `final/<slug>_thumbnail_16x9.png`
-(same art, title kept inside the frame) for places that need a wide image.
-Deliver: send the MP4 AND the thumbnail(s) with SendUserFile; tell the user in one line how to use
+Re-render the chosen thumbnail from its JSON with thumb.py (in case anything changed) as
+`final/<slug>_thumbnail.png`, plus a 1280×720 version `final/<slug>_thumbnail_16x9.png` (same art,
+title kept inside the frame) for places that need a wide image.
+**Name the final video `<slug>-haeXclips.mp4` (user rule, every short):** once QA passes, run
+`mv ~/shorts/<slug>/final/<slug>.mp4 ~/shorts/<slug>/final/<slug>-haeXclips.mp4`. That is the file you
+send and copy. (If you re-render later, the engine writes `<slug>.mp4` again: re-QA it, then rename again.)
+Deliver: send `final/<slug>-haeXclips.mp4` AND the thumbnail(s) with SendUserFile; tell the user in one line how to use
 it (YouTube app → when uploading the Short, tap the thumbnail/cover → add from gallery); if a folder on their computer is connected, copy the
-whole project there (final MP4 at `<folder>/<slug>/final/<slug>.mp4`, double-click to play).
+whole project there (final MP4 at `<folder>/<slug>/final/<slug>-haeXclips.mp4`, double-click to play).
 **Upload text (send with the MP4, ready to copy):**
 - **Title = a hook (the most important upload text).** On Shorts the title's job is to stop the
   scroll, not to label the video. Rules:
@@ -269,3 +305,8 @@ short's scene list with names swapped. Vary formats (Creature card, Story, "Myth
 4. Background music/SFX must never compete with the voice (levels in production-guide).
 5. Automate: the user should never need to type terminal commands.
 6. No new installs without asking. Keep it simple, buildable, testable.
+7. **Engine changes must reach GitHub in the same session (user rule, 14 Nov 2026).** Every new short
+   downloads the engine fresh from GitHub, so a change made only in this session's copy (preview page,
+   tools, assets) is lost next time ("it always goes back to the old version"). After any engine change:
+   commit as farm-dirt, attach the repo with add_repo (access: push), push, then verify with a fresh
+   `git clone --depth 1` that the change is there. Edits to this SKILL.md go through propose_skills.

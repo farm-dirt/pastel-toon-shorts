@@ -51,13 +51,44 @@ textarea{width:100%;min-height:38px;font:inherit;font-size:13px;border:1px solid
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2b1d1a;color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 .toast.show{opacity:1}
 #out{width:100%;min-height:90px;display:none;margin-top:6px}
-body.render header,body.render .side,body.render .controls,body.render .timeline,body.render .bigplay,body.render .safe{display:none!important}
+body.render header,body.render .side,body.render .controls,body.render .timeline,body.render .bigplay,body.render .markb,body.render .safe{display:none!important}
 body.render{background:#000}body.render main{display:block;padding:0}
 body.render .stage{width:1080px;height:1920px;border-radius:0}
+
+/* layout: the video stays put, only the scene list scrolls (user request) */
+body:not(.render){height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column}
+body:not(.render) main{flex:1;min-height:0;width:100%;grid-template-rows:minmax(0,1fr)}
+body:not(.render) .player{min-height:0;overflow-y:auto;scrollbar-width:none}
+body:not(.render) .side{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px;display:flex;flex-direction:column}
+.side .scenes{flex:1 0 auto}
+body:not(.render) .stage{width:min(100%,calc((100dvh - 310px) * 9 / 16))}
+.scene{cursor:pointer}
+.scene textarea,.scene button{cursor:auto}
+.scene button{cursor:pointer}
+/* timestamp marks */
+.markb{position:absolute;left:10px;top:10px;z-index:6;background:rgba(0,0,0,.55);color:#fff;border:0;border-radius:20px;padding:7px 12px;font:700 14px system-ui;cursor:pointer}
+.markb:active{transform:scale(.94)}
+.timeline .mk{position:absolute;top:0;bottom:0;width:3px;margin-left:-1px;background:#c0172b;box-shadow:0 0 0 1px #fff;pointer-events:none}
+.marks{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+.marks:empty{display:none}
+.mchip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:2px 4px 2px 9px;border-radius:99px;background:#fde3e3;color:#8a1020;border:1px solid #f0b4b4}
+.mchip button{border:0;background:none;padding:0 5px;color:inherit;font-size:13px;line-height:1}
+.scene .mcount{font-size:11px;font-weight:700;color:#c0172b}
+@media (max-width:820px){
+  header{padding-block:6px}
+  header .meta{display:none}
+  body:not(.render) main{grid-template-rows:auto minmax(0,1fr);gap:10px;padding-block:8px}
+  body:not(.render) .player{overflow:visible}
+  body:not(.render) .stage{width:min(100%,calc(36dvh * 9 / 16));min-width:0}
+  .timeline{margin-top:8px;height:30px}
+  .controls{flex-wrap:nowrap;overflow-x:auto;gap:6px;margin-top:8px;padding-bottom:2px;scrollbar-width:none}
+  .controls>*{flex:0 0 auto}
+  .controls button,.controls select{padding:6px 10px;font-size:13px}
+}
 </style>
 <header><h1 id="title">Preview</h1><span class="meta" id="meta"></span></header>
 <main>
-  <section>
+  <section class="player">
     <div class="stage" id="stage">
       <canvas id="cv" width="1080" height="1920"></canvas>
       <div class="safe" id="safe">
@@ -65,6 +96,7 @@ body.render .stage{width:1080px;height:1920px;border-radius:0}
         <div class="b" style="left:0;right:0;bottom:0;height:20%"><span style="left:6px;top:4px">title / channel / description</span></div>
         <div class="b" style="right:0;width:13%;top:42%;bottom:20%"><span style="right:4px;top:4px">buttons</span></div>
       </div>
+      <button class="markb" id="markov" title="Mark this moment (M)">⏱ Mark</button>
       <button class="fsx" id="fsx">✕ Exit full screen</button>
       <button class="bigplay" id="bigplay" aria-label="Play"><span>▶</span></button>
     </div>
@@ -76,6 +108,7 @@ body.render .stage{width:1080px;height:1920px;border-radius:0}
       <button id="loop">Loop scene</button>
       <button id="fsb" title="Full screen (or double-click the video, or press F)">⛶ Full screen</button>
       <select id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option></select>
+      <button id="markb" title="Mark this moment so you know which scene to change (key: M)">⏱ Mark</button>
       <button id="safeb">Safe zones</button>
       <button id="capb" class="on">Captions</button>
       <span class="time" id="time">0.00 s · f 0</span>
@@ -149,6 +182,8 @@ function loop() {
   draw(); requestAnimationFrame(loop);
 }
 let curLoop = P.scenes[0];
+const GET_T = () => (playing ? curTime() : t), SEEK = (x) => seek(x), SCENE_AT = (x) => PT.sceneAt(P, x);
+function LOOP_OFF() { loopScene = false; $('loop').classList.remove('on'); }
 $('play').onclick = () => setPlay(!playing);
 $('bigplay').onclick = () => setPlay(true);
 $('prevf').onclick = () => { setPlay(false); seek(t - 1 / FPS); };
@@ -176,10 +211,44 @@ const ec = $('envc').getContext('2d'), env = P.timing.env || [];
 ec.fillStyle = '#2b1d1a'; env.forEach((v, i) => { const x = i / env.length * 800; ec.fillRect(x, 16 - v * 16, 800 / env.length + 0.5, v * 16); });
 const scrub = (e) => { const r = tl.getBoundingClientRect(); seek(((e.clientX - r.left) / r.width) * DUR); };
 let drag = false;
-tl.addEventListener('pointerdown', (e) => { drag = true; tl.setPointerCapture(e.pointerId); if (playing) setPlay(false); scrub(e); });
+tl.addEventListener('pointerdown', (e) => { LOOP_OFF(); drag = true; tl.setPointerCapture(e.pointerId); if (playing) setPlay(false); scrub(e); });
 tl.addEventListener('pointermove', (e) => { if (drag) scrub(e); });
 tl.addEventListener('pointerup', () => { drag = false; });
 
+
+// ---- timestamp marks: press ⏱ Mark (or M) while watching; saved per project ----
+const MKEY = KEY + '-marks';
+let marks = []; try { marks = JSON.parse(store.get(MKEY) || '[]'); } catch (e) {}
+const markBoxes = [], markCounts = [];
+function fmtT(x) { return x.toFixed(2) + ' s'; }
+function drawMarks() {
+  document.querySelectorAll('#tl .mk').forEach((el) => el.remove());
+  markBoxes.forEach((b) => { b.innerHTML = ''; });
+  const per = {};
+  marks.slice().sort((a, b) => a - b).forEach((m) => {
+    const d = document.createElement('div'); d.className = 'mk'; d.style.left = (m / DUR * 100) + '%'; $('tl').appendChild(d);
+    const i = SCENE_AT(m); per[i] = (per[i] || 0) + 1;
+    const box = markBoxes[i]; if (!box) return;
+    const c = document.createElement('span'); c.className = 'mchip'; c.title = 'Go to this moment';
+    c.textContent = '⏱ ' + fmtT(m);
+    c.onclick = (e) => { e.stopPropagation(); LOOP_OFF(); SEEK(m); };
+    const x = document.createElement('button'); x.textContent = '✕'; x.title = 'Remove mark'; x.setAttribute('aria-label', 'Remove mark');
+    x.onclick = (e) => { e.stopPropagation(); marks = marks.filter((k) => k !== m); store.set(MKEY, JSON.stringify(marks)); drawMarks(); };
+    c.appendChild(x); box.appendChild(c);
+  });
+  markCounts.forEach((el, i) => { el.textContent = per[i] ? `⏱ ${per[i]}` : ''; });
+}
+function addMark() {
+  const m = Math.round(GET_T() * 100) / 100;
+  if (!marks.some((k) => Math.abs(k - m) < 0.05)) marks.push(m);
+  store.set(MKEY, JSON.stringify(marks)); drawMarks();
+  toast(`Marked ${fmtT(m)} · scene ${SCENE_AT(m) + 1}`);
+}
+$('markb').onclick = addMark;
+$('markov').onclick = (e) => { e.stopPropagation(); addMark(); };
+$('markov').addEventListener('dblclick', (e) => e.stopPropagation());
+document.addEventListener('keydown', (e) => { if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return; if (e.key === 'm' || e.key === 'M') { e.preventDefault(); addMark(); } });
+function marksFor(i) { return marks.filter((m) => SCENE_AT(m) === i).sort((a, b) => a - b); }
 // scene cards
 const list = $('scenes');
 P.scenes.forEach((s, i) => {
@@ -195,14 +264,18 @@ P.scenes.forEach((s, i) => {
   const pb = document.createElement('button'); pb.textContent = '▶ Play this scene';
   pb.onclick = () => { curLoop = s; loopScene = true; $('loop').classList.add('on'); seek(s.start); setPlay(true); };
   row.appendChild(pb); body.appendChild(row);
+  const mb = document.createElement('div'); mb.className = 'marks'; markBoxes[i] = mb; body.appendChild(mb);
   const ta = document.createElement('textarea'); ta.placeholder = 'Change request for this scene (optional)…';
   ta.value = notes[s.id || i] || ''; ta.oninput = () => { notes[s.id || i] = ta.value; store.set(KEY, JSON.stringify(notes)); };
   body.appendChild(ta); el.appendChild(body); list.appendChild(el);
-  th.onclick = () => { setPlay(false); seek(s.start + 0.01); };
+  const mc = document.createElement('span'); mc.className = 'mcount'; body.querySelector('h3').appendChild(mc); markCounts[i] = mc;
+  // click anywhere on the card (not the note box/buttons) = jump the video to this scene (keeps playing if it was)
+  el.onclick = (e) => { if (e.target.closest('textarea,button,.mchip')) return; LOOP_OFF(); seek(s.start + 0.01); if (playing) setPlay(true); };
   // thumbnail = real frame from the middle of the scene
   const tc = th.getContext('2d'); PT.renderFrame(ctx, P, (s.start + s.end) / 2); tc.drawImage(cv, 0, 0, 216, 384);
 });
 
+drawMarks();
 function toast(msg) { const el = $('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 1800); }
 async function copy(text) {
   try { await navigator.clipboard.writeText(text); toast('Copied — paste it to Claude'); }
@@ -219,8 +292,9 @@ async function send(kind, text) {
   copy(text);
 }
 $('copy').onclick = () => {
-  const lines = P.scenes.map((s, i) => [s, i]).filter(([s, i]) => (notes[s.id || i] || '').trim())
-    .map(([s, i]) => `- Scene ${i + 1} (${s.start.toFixed(2)}–${s.end.toFixed(2)} s, ${s.location}): ${notes[s.id || i].trim()}`);
+  const lines = P.scenes.map((s, i) => [s, i]).filter(([s, i]) => (notes[s.id || i] || '').trim() || marksFor(i).length)
+    .map(([s, i]) => { const mk = marksFor(i), n = (notes[s.id || i] || '').trim();
+      return `- Scene ${i + 1} (${s.start.toFixed(2)}–${s.end.toFixed(2)} s, ${s.location})${mk.length ? ' [marked at ' + mk.map(fmtT).join(', ') + ']' : ''}: ${n || '(marked, no note yet: check this moment)'}`; });
   send('notes', lines.length ? `Preview feedback for "${P.title}":\n${lines.join('\n')}` : `Preview feedback for "${P.title}": no notes yet.`);
 };
 $('approve').onclick = () => send('approve', `Preview approved for "${P.title}" — please render the final MP4.`);
