@@ -43,7 +43,7 @@ if the user names one in their message.
 For the Philippine culture & legends category: 10 original ideas (avoid repeating topics the user
 already made shorts about), each with **title, 1-2 line description, the hook
 (first 2 seconds), storytelling potential (★1-5 + why), why it animates well, format
-(Creature card 20-30 s or Story 40-55 s), audience fit (teen/adult tone, not a kids' moral lesson), mystery shape**
+(Creature card 20-30 s or Story 50-65 s), audience fit (teen/adult tone, not a kids' moral lesson), mystery shape**
 (for Stories: the looks-wrong or impossible opening, who doubts it, and the reversal, a few words each; see
 "Mystery formula" in Phase 4). Flag your top 2, preferring ideas with a clear mystery shape.
 Facts must be true — search the web for anything factual before pitching it; note when the legend has regional versions.
@@ -88,10 +88,10 @@ shape: one weird trait → what it does → the one way to survive it.
   (never "Long ago in a village…", never a greeting). Add a 2-4 word on-screen hook text for 0-2 s.
 - **Show the strange thing, don't promise it (lesson from the Kumakatok short, Nov 2026: 79 % average
   view duration but only 52 % stayed, so the story worked and the opening lost half the viewers).** The first
-  line is at most 6 words (under 2 s) and names or shows the impossible thing itself ("The body in this
-  coffin has no fingerprints."), not a setup that only promises something scary later ("Three knocks
+  line is at most 6 words (under 2 s) and names or shows the impossible thing itself ("This corpse has no
+  fingerprints."), not a setup that only promises something scary later ("Three knocks
   after midnight…"). The hook text asks a SECOND question and never repeats the narration (narration
-  "This baby never cries." + text "Look at its feet").
+  "This corpse has no fingerprints." + text "WHERE'S LOLA?").
 - **Link beats with "but" / "therefore", never "and then"** (avoids boring chronology).
 - **Re-hook every ~8-10 s**: a new question, reveal or reversal ("But the old folks aren't laughing." /
   "Watch the guests.").
