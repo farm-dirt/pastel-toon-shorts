@@ -11,7 +11,8 @@ writes PROJECT_DIR/audio/mix.wav  (final, -14 LUFS, true peak <= -1 dBFS)
 LEVELS (user preference: background must never fight the voice):
   music  = 8 % of the voice level during speech (-22 dB), rises to 14 % in long pauses
   sfx    = peaks at 35 % of the voice peak
-Override in project.json: "mix": {"music": 0.08, "musicPause": 0.14, "sfx": 0.35}
+  room   = 2 % of the voice level everywhere (quiet air), so the mix is never digital silence
+Override in project.json: "mix": {"music": 0.08, "musicPause": 0.14, "sfx": 0.35, "roomTone": 0.02}
 Recorded music: "music": {"track": "greek_folk", "start": 0, "stops": [[a, b]]} (files in assets/music/)
 """
 import json, os, subprocess, sys, re
@@ -159,11 +160,7 @@ def music(dur, bpm=112, key=0, stops=()):
         m = note(base * 2 * 2 ** (ch[pat] / 12), step * 1.8, 0.28 if k % 2 == 0 else 0.18, 'mar'); out[s:s + len(m)] += m[:n - s]
         k += 1
     out = out[:int(dur * SR)]
-    for a, b in stops:  # musical "freeze" for gags: hard drop then fade back in
-        i0, i1 = int(a * SR), int(b * SR); out[i0:i1] = 0
-        fi = min(int(0.15 * SR), len(out) - i1)
-        if fi > 0: out[i1:i1 + fi] *= np.linspace(0, 1, fi)
-    return out
+    return apply_stops(out, stops)  # musical "freeze" for gags/tension: duck, never zero
 
 
 MUSIC_DIR = os.path.join(os.path.dirname(SFX_DIR), 'music')
@@ -177,7 +174,7 @@ def music_tracks():
 
 def music_track(name, dur, start=0.0, stops=()):
     """Recorded music bed from assets/music/<name>: starts at `start` s, loops (1 s crossfade) to fill
-    `dur`, fades in 1 s, applies the same stops as the synth bed (hard drop, 0.15 s fade back)."""
+    `dur`, fades in 1 s, applies the same stops as the synth bed (duck to STOP_FLOOR, never silence)."""
     path = next(os.path.join(MUSIC_DIR, f) for f in os.listdir(MUSIC_DIR) if os.path.splitext(f)[0] == name)
     src = load_audio(path)[int(start * SR):]
     n = int(dur * SR); out = src.copy(); xf = SR
@@ -186,15 +183,38 @@ def music_track(name, dur, start=0.0, stops=()):
         out = np.concatenate([out[:-xf], a * (1 - r) + b * r, src[xf:]])
     out = out[:n]
     fi = min(SR, n); out[:fi] *= np.linspace(0, 1, fi)
-    for a, b in stops:
-        i0, i1 = int(a * SR), int(b * SR); out[i0:i1] = 0
-        f2 = min(int(0.15 * SR), len(out) - i1)
-        if f2 > 0: out[i1:i1 + f2] *= np.linspace(0, 1, f2)
-    return out
+    return apply_stops(out, stops)
 
 
 def rms(x):
     return float(np.sqrt(np.mean(x ** 2)) + 1e-12)
+
+
+STOP_FLOOR = 0.12   # music "stops" duck to 12 % (about -18 dB), never to zero: zero = dead air on phones
+STOP_MAX = 0.4      # a silence beat longer than this feels like the video broke (Kumakatok, Nov 2026)
+
+
+def apply_stops(out, stops):
+    """Tension beat: quick 60 ms duck to STOP_FLOOR, held at most STOP_MAX s, 0.15 s fade back."""
+    for a, b in stops:
+        if b - a > STOP_MAX:
+            print(f'!! music stop {a:.2f}-{b:.2f} is {b - a:.2f} s; capped to {STOP_MAX} s (longer feels like dead air)')
+            b = a + STOP_MAX
+        i0, i1 = int(a * SR), min(len(out), int(b * SR))
+        if i0 >= i1: continue
+        g = np.ones(len(out)); fd = min(int(0.06 * SR), i0); fu = min(int(0.15 * SR), len(out) - i1)
+        g[i0 - fd:i0] = np.linspace(1, STOP_FLOOR, fd) if fd else g[i0 - fd:i0]
+        g[i0:i1] = STOP_FLOOR
+        if fu > 0: g[i1:i1 + fu] = np.linspace(STOP_FLOOR, 1, fu)
+        out *= g
+    return out
+
+
+def room_tone(n, level):
+    """Very quiet low-passed noise under the whole mix, so no moment is ever digital silence."""
+    w = rng.standard_normal(n + SR)
+    k = int(0.004 * SR); w = np.convolve(w, np.ones(k) / k, mode='same')[:n]
+    return w / rms(w) * level
 
 
 def main():
@@ -236,7 +256,8 @@ def main():
         if name not in SFX: print('!! unknown sfx', name, '-> available:', ', '.join(sorted(SFX))); continue
         s = shape_cue(SFX[name](), cue); s = s / (np.abs(s).max() + 1e-9) * vpk * mixcfg['sfx'] * cue.get('gain', 1.0)
         i = int(cue['t'] * SR); fx[i:i + len(s)] += s[:max(0, len(fx) - i)]
-    mix = voice + bed + fx
+    # room tone ~ -34 dB under the voice: inaudible under speech, but pauses never go to dead air
+    mix = voice + bed + fx + room_tone(len(voice), vr * mixcfg.get('roomTone', 0.02))
     os.makedirs(os.path.join(P, 'audio'), exist_ok=True)
     tmp = os.path.join(P, 'audio', 'mix_raw.wav')
     pcm = np.clip(mix / max(1.0, np.abs(mix).max()), -1, 1)

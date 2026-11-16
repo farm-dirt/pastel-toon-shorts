@@ -4,7 +4,7 @@
 - Physical comedy carries the story: anticipation → action → hold → reaction (double-take).
 - Mostly static, side-on staging; slow push-ins on reactions; few camera tricks.
 - TV pacing ≈ one shot per 4.4 s. **Shorts: one shot per 1.5-3 s**, the first cut within 2 s.
-- Silence/held poses are funny: freeze the music on the gag (`music.stops`), hold the shocked face ~0.5 s.
+- Held poses are funny: duck the music on the gag (`music.stops`, max 0.4 s, never dead silence), hold the shocked face ~0.5 s while something still moves (blink, sweat drop, eyes).
 
 ## Acting recipes (use these keys)
 | Beat | Recipe |
@@ -41,7 +41,7 @@ Max ~1 non-cut transition per 3 scenes.
 ```json
 {
   "id": "slug", "slug": "slug", "title": "Title", "fps": 30, "voice": "voice.mp3", "captionY": 400,
-  "music": {"on": true, "bpm": 112, "key": 0, "stops": [[8.82, 9.6]]},
+  "music": {"on": true, "bpm": 112, "key": 0, "stops": [[8.82, 9.2]]},
   "mix": {"music": 0.08, "musicPause": 0.14, "sfx": 0.35},
   "sfx": [{"t": 2.02, "name": "boing"}, {"t": 3.2, "name": "whoosh", "gain": 0.8}],
   "captions": [{"s": 0.36, "e": 1.48, "text": "toby found one"}, {"s": 1.48, "e": 2.47, "text": "shiny *coin*"}],

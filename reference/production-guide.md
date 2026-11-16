@@ -20,7 +20,12 @@ syllable-proportional breaks — check the report and adjust captions by ear in 
 - Music bed: **8 % of the voice level while speaking** (−22 dB), 14 % in pauses ≥ 0.6 s, fades out at the end.
 - SFX: peak at 35 % of the voice peak (`gain` per cue to adjust).
 - Final: one linear gain to **−14 LUFS**, limiter → true peak ≤ −1 dBFS. Stereo 48 kHz, AAC 192k.
-- Music "stops" (`music.stops`) drop the bed for a gag beat and fade back in over 0.15 s.
+- Music "stops" (`music.stops`) duck the bed to 12 % for a gag/tension beat (never to zero), at most
+  0.4 s (longer is capped), and fade back in over 0.15 s. Put something under it (`heartbeat`, a creak,
+  `night_ambience` at low gain) and keep something moving on screen.
+- Room tone (2 % of the voice level, `mix.roomTone`) runs under the whole mix, so no moment is ever
+  digital silence. Dead air sounds like the video froze on a phone (Kumakatok short, Nov 2026: 0.5 s of
+  total silence at 37 s, right before the payoff). `qa.py` fails any silence longer than 0.15 s.
 - Available SFX: `python3 tools/audio.py --list`.
 
 ## Preview page

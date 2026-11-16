@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Final QA for a rendered short. usage: python3 qa.py PROJECT_DIR VIDEO.mp4
-Checks export settings, sync length, loudness, black/frozen frames, and writes
+Checks export settings, sync length, loudness, dead air, black/frozen frames, and writes
 scenes/contact_sheet.jpg (one still from the middle of every scene) to eyeball
 character consistency, text readability and safe zones.
 """
@@ -35,6 +35,9 @@ def main():
         I = float(re.findall(r'I:\s+(-?[\d.]+) LUFS', o)[-1]); tp = float(re.findall(r'Peak:\s+(-?[\d.]+) dBFS', o)[-1])
         chk('loudness about -14 LUFS', -15.5 <= I <= -12.5, f'{I:.1f} LUFS')
         chk('true peak <= -1 dBFS', tp <= -0.9, f'{tp:.1f} dBFS')
+        o = run(['ffmpeg', '-hide_banner', '-i', V, '-af', 'silencedetect=n=-55dB:d=0.15', '-vn', '-f', 'null', '-']).stderr
+        sl = re.findall(r'silence_start: (-?[\d.]+)', o)
+        chk('no dead air (silence > 0.15 s)', not sl, 'ok' if not sl else 'silent at ' + ', '.join(f'{float(x):.2f}s' for x in sl))
     o = run(['ffmpeg', '-hide_banner', '-i', V, '-vf', 'blackdetect=d=0.1:pix_th=0.05', '-an', '-f', 'null', '-']).stderr
     chk('no black frames', 'black_start' not in o, 'ok' if 'black_start' not in o else 'black frames found')
     o = run(['ffmpeg', '-hide_banner', '-i', V, '-vf', 'freezedetect=n=0.0005:d=1.5', '-an', '-f', 'null', '-']).stderr

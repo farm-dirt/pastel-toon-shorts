@@ -43,7 +43,9 @@ if the user names one in their message.
 For the Philippine culture & legends category: 10 original ideas (avoid repeating topics the user
 already made shorts about), each with **title, 1-2 line description, the hook
 (first 2 seconds), storytelling potential (★1-5 + why), why it animates well, format
-(Creature card 20-30 s or Story 40-55 s), audience fit (teen/adult tone, not a kids' moral lesson)**. Flag your top 2.
+(Creature card 20-30 s or Story 40-55 s), audience fit (teen/adult tone, not a kids' moral lesson), mystery shape**
+(for Stories: the looks-wrong or impossible opening, who doubts it, and the reversal, a few words each; see
+"Mystery formula" in Phase 4). Flag your top 2, preferring ideas with a clear mystery shape.
 Facts must be true — search the web for anything factual before pitching it; note when the legend has regional versions.
 **What wins in this niche (research, Nov 2026):** creature Shorts break out even on tiny channels when they open on
 one creature with one weird, instantly readable trait (manananggal, aswang, tiyanak, kapre, tikbalang,
@@ -54,15 +56,45 @@ Wait for the user to pick. Do not proceed on your own.
 ### Phase 4 — Script + voice-over (ONE checkpoint)  ⛔
 Script and voice-over are combined into a single step so the user only waits once.
 Write the script with the template in `content-playbook.md`: hook (0-2 s), setup, escalation,
-twist/payoff, button ending, optional CTA. Per section: narration, est. duration
-(~2.6 words/s), visuals, character actions, transition. Target 30-55 s (≈ 80-140 words) for a Story,
+twist/payoff, button ending (no spoken CTA, see below). Per section: narration, est. duration
+(~2.6 words/s), visuals, character actions, transition. Target 40-55 s (≈ 105-140 words) for a Story,
 20-30 s (≈ 50-75 words) for a Creature card.
+**Mystery formula for Stories (from two viral reference Shorts, user request 15 Nov 2026).** Write every
+Story as a mystery the viewer solves along with the narrator. The template sections above still apply;
+this is how to fill them:
+1. **Looks-wrong hook (0-3 s):** open on the main character doing something that looks foolish or wrong,
+   or on a claim that sounds impossible ("He hangs a stingray tail by every window." / "This baby has never
+   cried. Not once."). The viewer's "why?" is the hook.
+2. **Rewind (3-8 s):** "See, …" or "It all started when…" jumps back to the setup in one sentence.
+3. **Stakes:** what can be won or lost, big and simple, said by ~10 s.
+4. **Doubter:** someone thinks the hero is crazy or wrong (neighbours, elders, family, a rival). No
+   dialogue: say it as narration ("His neighbours laugh. Loudly.") plus a picture reaction or pop-up
+   text, never a quoted line.
+5. **Low point:** the normal way seems to win at first; the hero looks dumb.
+6. **Clue shown with everyday things:** reveal the secret in steps the viewer can picture: a coin, a
+   finger's width, a grain of salt, a cup of rice, a heartbeat. No textbook words; the viewer should
+   almost guess it before the narrator says it.
+7. **Reversal + hard stop:** the doubter's side fails in the most visual way possible, or the hero is
+   proven right; end on that image or a one-line consequence, then cut (still loop-friendly, see below).
+Every few lines, open the next question with a turn line ("Then the dry season comes, and something
+weird happens." / "Meanwhile…" / "So what does he do?"). Creature cards (20-30 s) keep their simpler
+shape: one weird trait → what it does → the one way to survive it.
 **Retention rules (check every script before sending):**
 - **Write the ending first**, then build backwards. One character, one goal, one problem.
 - **Hook = first spoken line + first image together**: start in the middle of the strangest moment
   (never "Long ago in a village…", never a greeting). Add a 2-4 word on-screen hook text for 0-2 s.
+- **Show the strange thing, don't promise it (lesson from the Kumakatok short, Nov 2026: 79 % average
+  view duration but only 52 % stayed, so the story worked and the opening lost half the viewers).** The first
+  line is at most 6 words (under 2 s) and names or shows the impossible thing itself ("The body in this
+  coffin has no fingerprints."), not a setup that only promises something scary later ("Three knocks
+  after midnight…"). The hook text asks a SECOND question and never repeats the narration (narration
+  "This baby never cries." + text "Look at its feet").
 - **Link beats with "but" / "therefore", never "and then"** (avoids boring chronology).
-- **Re-hook every ~8-10 s**: a new question, reveal or reversal ("But that wasn't the scary part.").
+- **Re-hook every ~8-10 s**: a new question, reveal or reversal ("But that isn't the scary part.").
+- **Present tense (user rule, 15 Nov 2026)**: tell the main action as if it is happening right now ("He
+  hangs a stingray tail by every window." / "The baby stops crying."). Why: it feels live, like watching it
+  happen, not hearing a history lesson. Background can stay in past tense ("Lolas used to warn…"), but
+  never switch tense in the middle of a scene.
 - **Show, don't narrate**: the narrator sets up, the picture delivers the joke or scare. Never narrate an
   emotion the face already shows. Mark at least 2 moments where the picture says something the narration doesn't.
 - **Narration only — one voice, no dialogue.** The narrator is the ONLY voice in the short: no
@@ -75,6 +107,8 @@ twist/payoff, button ending, optional CTA. Per section: narration, est. duration
   mid-video subscribe button instead (`project.cta`, Phase 6 step 3) — it never touches the ending.
 - **Tone for teens/adults** (witty or spooky, "folklore explained"), not a children's moral lesson —
   this is who the channel is for, and it keeps the content honestly "not made for kids".
+- **Mystery check (Stories):** point to the looks-wrong hook, the doubter, the everyday-thing clue and
+  the reversal. If one is missing, fix it or say in the script message why this story doesn't need it.
 **Voice + settings to suggest every time (the user is on FREE ElevenLabs):**
 - **Voice:** the channel's narrator is **Jon – Catalyst**; keep the same voice on every short so viewers
   recognise the series. Only suggest another voice if the user asks (then: a calm, clear storyteller voice
@@ -117,6 +151,9 @@ The voice-over is the master clock: scene cuts go on real pauses (`timing.senten
    **Directing rules (from the user's animation-direction brief):**
    - **Frame 0 is the hook**: the creature/strangest moment is already on screen at t = 0 — no fade-in,
      no empty establishing shot, no logo. Hook text (2-4 words, big) shows 0-2 s.
+     Frame 0 must show the wrong/impossible image itself (the fake body, the creature's weird trait
+     mid-action), not a door, a house or a calm place where something will happen later. Something
+     moves or changes within the first 0.5 s (a twitch, a reveal, a camera push).
    - **YouTube Shorts safe zone (user rule, Nov 2026).** The Shorts app draws its buttons and text
      ON TOP of the video, so anything important there is hidden. In the final 1080×1920 picture
      (screen position after the camera, not world coordinates), keep every face, the key
@@ -133,7 +170,12 @@ The voice-over is the master clock: scene cuts go on real pauses (`timing.senten
    - Every camera move or angle must have a reason (reveal, emphasis, chaos) — say it in the scene `desc`.
    - **Colour script**: characters keep their colours; shift the location light/tint per story beat
      (warmer for safe/funny, darker or cooler for danger, a flash of red for the scare). Plan it in one line before building.
-   - **Sound for every visible action** (step, grab, blink-pop, landing). A silence beat (`music.stops`) right before the punchline/scare.
+   - **Sound for every visible action** (step, grab, blink-pop, landing). A tension beat (`music.stops`) right before the punchline/scare:
+     **never dead air** (user rule, Nov 2026: the Kumakatok short had 0.5 s of total silence at 37 s, right before
+     the payoff, and it sounded like the video froze). The engine now ducks the music to 12 % instead of zero,
+     caps a stop at 0.4 s and keeps quiet room tone under the whole mix. Still put a sound under the beat
+     (`heartbeat`, a creak, `night_ambience` at gain 0.3) and keep something moving on screen (blink, eyes,
+     slow camera push). `qa.py` fails any silence longer than 0.15 s.
    - Use one or two of the cast (Toby/Nan/Bramble/Pip) as recurring witnesses or reactors in each legend, so viewers
      recognise the same faces across the series.
 2. **Captions**: start from `timing.captions`, fix names/casing, wrap 1-2 key words per
@@ -149,8 +191,9 @@ The voice-over is the master clock: scene cuts go on real pauses (`timing.senten
    `riser`, `whoosh_cinematic`, `magic_sparkle`, `sparkle_whoosh`, `bell`, `falling_whistle`, `pop`
    (recorded; synth is `pop_synth`), `thunder`, `rocks`, `water_splash`, `door_creak`,
    `footsteps_gravel`, `monster_growl`, `heartbeat`, `sword_clash`, paper sounds, and quiet ambiences
-   (`wind`, `wind_howl`, `fire_crackle`, `night_ambience`, `horror_drone`: `gain` 0.3-0.5 + `dur` + fades).
+   (`wind_howl`, `fire_crackle`, `night_ambience`, `horror_drone`: `gain` 0.3-0.5 + `dur` + fades).
    Cue options: `{"t", "name", "gain", "dur", "fadeIn", "fadeOut"}`.
+   **Never use `wind`** (same file the user banned on the paper channel, 14 Nov 2026: a low rumble; use `wind_howl`).
    **Never use `dark_click`** (user rule, Nov 2026): it is a 9.5 s low rumble that drones under several scenes; the user
    disliked it. **Always give recorded SFX a `dur` + `fadeOut`** (about 0.8-1.6 s): many files are long recordings
    (`magic_sparkle` 20 s, `bell` 5.3 s, `suspense_sting` 4.9 s, `impact_hit` 3 s) and otherwise keep playing under the next scenes.
@@ -169,7 +212,8 @@ NODE_PATH=$(npm root -g) node ~/pts/tools/lint.js ~/shorts/<slug>   # must say O
 Fix every lint line (move camera / actors), rebuild, re-lint. Then render 3-5 stills at key
 moments (see production-guide "spot check") and LOOK at them yourself before showing the user.
 Always include t = 0.0 in the stills. **Audience-eye review** before the preview: (1) Would a stranger
-swiping fast stop at frame 0? (2) Any stretch > 1.5 s where nothing changes? (3) Any shot that only
+swiping fast stop at frame 0? Does the t = 0 still alone, with the sound off, show something impossible
+or wrong? (2) Any stretch > 1.5 s where nothing changes? (3) Any shot that only
 illustrates the narration literally with no extra joke/feeling? (4) Same face held too long?
 (5) Does the end cut cleanly back into the start? (6) Would the YouTube buttons or title cover a
 face, the reveal or any text in any still (check against the safe box x 48-888, y 180-1500)?
@@ -184,20 +228,13 @@ declare `{"db": {}, "user": {}}` on it — that is what lets the preview's butto
 Republish the SAME artifact (slug + base_version) on every revision, so the link never changes. Also copy
 the preview folder to the user's computer if a folder is connected (opening `index.html` works offline).
 Tell the user: press ▶ (it loops like a Short), ⛶ Full screen (or double-click / F), "Play this scene"
-to loop one scene. The video stays still while the scene list scrolls; click any scene card to jump the
-video there. While watching, press **⏱ Mark** (or the M key; it also works in full screen) at any moment
-that needs a fix: marks show as red ticks on the timeline and as chips on their scene card (click a chip
-to go back to it, ✕ to remove) and are sent with the notes. Type change requests in the boxes, then press **Send notes to Claude** or
+to loop one scene, type change requests in the boxes, then press **Send notes to Claude** or
 **✓ Approve** and just type **"check"** in the chat. A page cannot message the chat by itself, so never
 promise that the buttons process on their own.
 **When the user says "check"** (or "done", "sent"): read `feedback/latest` with the artifact db read tool
 (db_get on the preview's slug) and act on its `text`: kind `notes` → do the revisions; kind `approve` →
 Phase 8 (with the thumbnail they named, or ask A/B in the same reply). If it is missing or older than
 their last message, the page fell back to copying — ask them to paste the text instead.
-**Marks in the feedback** look like `Scene 5 (…) [marked at 12.34 s]: note`. Render a still at each
-marked time and LOOK at it before changing that scene. A mark with no note ("marked, no note yet")
-means "something is off here": look at that exact moment, say in one line what you think is wrong,
-fix it if it's clear, otherwise ask.
 **Thumbnail (made at the same time, so no extra waiting):** design 2 NEW thumbnail images.
 NEVER use a frame captured from the video — each thumbnail is its own composition made to sell
 this short at phone size:
@@ -263,16 +300,24 @@ whole project there (final MP4 at `<folder>/<slug>/final/<slug>-haeXclips.mp4`, 
      honest to the video. Show the scores in a small table, mark your pick, say why in one line.
 - **Description hook:** the first 1-2 lines are the hook (they show before "more"), then 2-3
   short lines of extra context or a fun fact that's true (checked on the web, mention a source or
-  "versions differ by region" when relevant), then a comment question that invites an answer
-  (e.g. "What's your province's version of this creature?" or "Which country are you watching from?"),
+  "versions differ by region" when relevant), then the local-version question (see Comment driver),
   then 3-5 hashtags (always include #shorts, plus topic tags like #philippines #folklore). Only the
   first 3 hashtags show above the title.
 - **Series name** goes at the END of the title (" | Pinoy Creature Files") only if the total stays ≤ 60,
   otherwise in the first line of the description — never in front of the hook.
+- **Comment driver (every short; user rule, 14 Nov 2026):** write one **"your version" question**
+  asking viewers how this creature or legend is told in their province or family ("What did your lola
+  call this in your province?", "In your province, what keeps the Tiktik away?"). Specific to this
+  short's creature, answerable by everyone, under 15 words. Use it as the description's comment
+  question AND as a **pinned comment** the user posts right after upload (its own code block,
+  labelled "Pinned comment"). Never put it in the narration: the ending stays the twist or loop.
+  Never bait comments with a deliberate mistake. Remind in one line: reply to the first comments
+  within the first hour.
 - **Upload settings to tell the user:** Audience = answer honestly; this series is written for
   teens/adults, so normally "No, it's not made for kids" (YouTube can change it, and Made for Kids turns
-  off comments and personalised ads). Altered/synthetic content = No (fully animated). Use only the
-  synthesized music (licensed tracks take a share of Shorts revenue).
+  off comments and personalised ads). Altered/synthetic content = No (fully animated). Music and SFX: only the
+  engine's synth or the user's own library in assets/, never commercial songs (licensed tracks take a share
+  of Shorts revenue). If YouTube ever flags a track, tell the user which one and swap it.
 - **Cross-post:** suggest also uploading to Facebook Reels (Facebook monetization is open in the Philippines;
   TikTok's Creator Rewards is not).
 Put each title and the full description in its own code block so the user can copy it in one tap.
@@ -285,6 +330,11 @@ Also save them to `final/<slug>_upload.txt`.
 - At the start of a new short, ask once: "How did the last one do? Tell me its 'Stayed to watch' %
   (YouTube Studio → the Short → Analytics)." Compare it against their own earlier Shorts, not a
   universal target, and adjust the next hook.
+  How to read the stats the user shares: **low "Stayed to watch" + high average view duration = hook
+  problem** (fix frame 0, the first line and the hook text; keep the story shape). **High stayed + low
+  duration = story problem** (more re-hooks, a shorter middle, an earlier payoff). Low on both means the
+  topic and the hook are both weak. Stats from the first 1-2 days are early, so recheck after 2-3 days
+  before drawing firm conclusions. If it has 0 comments, give the pinned "your version" comment to post right away.
 One line of notes + offer the next idea. Update nothing in this skill unless the user asks.
 
 ## Series identity (set once, then reuse)
@@ -305,8 +355,7 @@ short's scene list with names swapped. Vary formats (Creature card, Story, "Myth
 4. Background music/SFX must never compete with the voice (levels in production-guide).
 5. Automate: the user should never need to type terminal commands.
 6. No new installs without asking. Keep it simple, buildable, testable.
-7. **Engine changes must reach GitHub in the same session (user rule, 14 Nov 2026).** Every new short
-   downloads the engine fresh from GitHub, so a change made only in this session's copy (preview page,
-   tools, assets) is lost next time ("it always goes back to the old version"). After any engine change:
+7. **Engine changes must reach GitHub in the same session.** Every new short downloads the engine fresh
+   from GitHub, so a change made only in this session's copy is lost next time. After any engine change:
    commit as farm-dirt, attach the repo with add_repo (access: push), push, then verify with a fresh
-   `git clone --depth 1` that the change is there. Edits to this SKILL.md go through propose_skills.
+   `git clone --depth 1`. Edits to this SKILL.md go through propose_skills.
