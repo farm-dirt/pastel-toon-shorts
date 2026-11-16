@@ -3,7 +3,7 @@
 Engine + skill for making vertical (1080×1920, 30 fps) 2D cartoon YouTube Shorts with Claude:
 script → voice-over → browser preview of the real animation → final MP4.
 
-- `SKILL.md` — the workflow Claude follows (with approval checkpoints)
+- `SKILL.md` — a pointer: the live skill (the workflow Claude follows) is saved in the Claude account
 - `reference/` — style, animation, characters, production, content guides
 - `engine/` — Canvas 2D character rig, backgrounds, scene engine, preview page
 - `tools/` — timing (voice analysis), audio (synth SFX/music + mix), build_preview, lint, render, qa, new_project
