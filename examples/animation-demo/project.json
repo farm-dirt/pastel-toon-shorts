@@ -1,0 +1,390 @@
+{
+ "id": "demo",
+ "slug": "demo",
+ "title": "Animation upgrade demo",
+ "fps": 30,
+ "voice": "voice.mp3",
+ "captionY": 330,
+ "music": {
+  "track": "cinematic_tension",
+  "start": 0,
+  "stops": [
+   [
+    3.6,
+    3.9
+   ]
+  ]
+ },
+ "mix": {
+  "music": 0.08,
+  "musicPause": 0.14,
+  "sfx": 0.35
+ },
+ "sfx": [
+  {
+   "t": 1.0,
+   "name": "boing"
+  },
+  {
+   "t": 4.55,
+   "name": "impact_hit",
+   "dur": 1.0,
+   "fadeOut": 0.4
+  },
+  {
+   "t": 6.4,
+   "name": "tada"
+  }
+ ],
+ "scenes": [
+  {
+   "id": "coin",
+   "start": 0,
+   "end": 2.2,
+   "location": "park",
+   "desc": "Toby walks in fast, spots the coin, shock take with a hop",
+   "camera": [
+    {
+     "t": 0,
+     "x": 540,
+     "y": 820,
+     "zoom": 1
+    },
+    {
+     "t": 1.0,
+     "x": 560,
+     "y": 780,
+     "zoom": 1.2,
+     "ease": "spring"
+    }
+   ],
+   "actors": [
+    {
+     "who": "toby",
+     "h": 820,
+     "keys": [
+      {
+       "t": 0,
+       "x": 60,
+       "y": 1560,
+       "walk": true,
+       "face": "happy"
+      },
+      {
+       "t": 0.55,
+       "x": 430,
+       "walk": true
+      },
+      {
+       "t": 0.6,
+       "walk": false,
+       "view": "front",
+       "look": [
+        0.6,
+        0.5
+       ]
+      },
+      {
+       "t": 1.0,
+       "take": "shock",
+       "hop": 60,
+       "armL": [
+        2.4,
+        0.3
+       ],
+       "armR": [
+        2.4,
+        0.3
+       ]
+      },
+      {
+       "t": 1.35,
+       "hop": 0,
+       "armL": [
+        0.3,
+        0.2
+       ],
+       "armR": [
+        0.3,
+        0.2
+       ]
+      }
+     ]
+    }
+   ],
+   "props": [
+    {
+     "type": "coin",
+     "x": 700,
+     "y": 1540,
+     "size": 80
+    }
+   ],
+   "fx": [
+    {
+     "type": "exclaim",
+     "t": 1.0,
+     "dur": 0.9,
+     "x": 560,
+     "y": 640,
+     "size": 180
+    },
+    {
+     "type": "punch",
+     "t": 1.0
+    },
+    {
+     "type": "focuslines",
+     "t": 1.0,
+     "dur": 0.7,
+     "y": 900
+    }
+   ]
+  },
+  {
+   "id": "dark",
+   "start": 2.2,
+   "end": 4.3,
+   "location": "night",
+   "mood": "dark",
+   "ambient": "fireflies",
+   "desc": "Lights out: palette drop, slow push, Nan worried, double take",
+   "camera": [
+    {
+     "t": 0,
+     "x": 540,
+     "y": 1080,
+     "zoom": 1.1
+    },
+    {
+     "t": 2.1,
+     "x": 500,
+     "y": 1120,
+     "zoom": 1.3
+    }
+   ],
+   "actors": [
+    {
+     "who": "nan",
+     "h": 1250,
+     "keys": [
+      {
+       "t": 0,
+       "x": 500,
+       "y": 1560,
+       "face": "worried"
+      },
+      {
+       "t": 1.2,
+       "take": "double",
+       "face": "shock"
+      },
+      {
+       "t": 1.7,
+       "armL": [
+        2.0,
+        0.4
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "land",
+   "start": 4.3,
+   "end": 6.3,
+   "location": "street",
+   "desc": "Something lands: hitstop, impact frame, shake, debris",
+   "camera": [
+    {
+     "t": 0,
+     "x": 540,
+     "y": 1040,
+     "zoom": 1.0
+    }
+   ],
+   "actors": [
+    {
+     "who": "bramble",
+     "h": 860,
+     "keys": [
+      {
+       "t": 0,
+       "x": 680,
+       "y": 1560,
+       "hop": 260,
+       "face": "angry"
+      },
+      {
+       "t": 0.3,
+       "hop": 0,
+       "ease": "in"
+      }
+     ]
+    },
+    {
+     "who": "pip",
+     "h": 1150,
+     "keys": [
+      {
+       "t": 0,
+       "x": 330,
+       "y": 1580,
+       "face": "neutral"
+      },
+      {
+       "t": 0.4,
+       "take": "shock",
+       "armL": [
+        2.2,
+        0.2
+       ],
+       "armR": [
+        2.2,
+        0.2
+       ]
+      },
+      {
+       "t": 1.2,
+       "face": "worried",
+       "armL": [
+        0.3,
+        0.2
+       ],
+       "armR": [
+        0.3,
+        0.2
+       ]
+      }
+     ]
+    }
+   ],
+   "fx": [
+    {
+     "type": "hitstop",
+     "t": 0.3,
+     "dur": 0.15,
+     "who": "bramble"
+    },
+    {
+     "type": "impactframe",
+     "t": 0.3
+    },
+    {
+     "type": "shake",
+     "t": 0.3,
+     "amp": 50
+    },
+    {
+     "type": "debris",
+     "t": 0.32,
+     "x": 680,
+     "y": 1560,
+     "size": 110
+    },
+    {
+     "type": "exclaim",
+     "t": 0.4,
+     "dur": 0.8,
+     "x": 330,
+     "y": 620,
+     "size": 150
+    }
+   ]
+  },
+  {
+   "id": "win",
+   "start": 6.3,
+   "end": 8.05,
+   "location": "shop",
+   "desc": "He wins anyway: confetti, cheer",
+   "camera": [
+    {
+     "t": 0,
+     "x": 540,
+     "y": 900,
+     "zoom": 1.25
+    }
+   ],
+   "actors": [
+    {
+     "who": "toby",
+     "h": 820,
+     "keys": [
+      {
+       "t": 0,
+       "x": 540,
+       "y": 1560,
+       "face": "grin",
+       "armL": [
+        0.3,
+        0.2
+       ],
+       "armR": [
+        0.3,
+        0.2
+       ]
+      },
+      {
+       "t": 0.25,
+       "take": "happy",
+       "armL": [
+        2.6,
+        0.2
+       ],
+       "armR": [
+        2.6,
+        0.2
+       ],
+       "hop": 40
+      },
+      {
+       "t": 0.6,
+       "hop": 0
+      }
+     ]
+    }
+   ],
+   "fx": [
+    {
+     "type": "confetti",
+     "t": 0.25,
+     "dur": 1.5,
+     "x": 540,
+     "y": 900,
+     "size": 110
+    }
+   ]
+  }
+ ],
+ "cta": {
+  "s": 3.6,
+  "e": 6.2,
+  "tap": 0.95,
+  "text": "More Test",
+  "y": 1400
+ },
+ "captions": [
+  {
+   "s": 0.3,
+   "e": 1.9,
+   "text": "toby finds a *coin*"
+  },
+  {
+   "s": 2.4,
+   "e": 3.9,
+   "text": "the lights go *out*"
+  },
+  {
+   "s": 4.4,
+   "e": 5.9,
+   "text": "something *lands*"
+  },
+  {
+   "s": 6.35,
+   "e": 8.05,
+   "text": "he wins *anyway*"
+  }
+ ]
+}

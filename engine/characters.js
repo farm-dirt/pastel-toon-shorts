@@ -60,7 +60,7 @@
 
   const DEF_POSE = {
     facing: 1, view: 'front', lean: 0, headTilt: 0, look: [0, 0], blink: 0,
-    face: 'neutral', talk: 0, squash: 1,
+    face: 'neutral', talk: 0, squash: 1, squint: 0, eyeScale: 1, drag: 0,
     armL: [0.25, 0.15], armR: [0.25, 0.15], // [shoulder, elbow] radians, + = outward / forward
     walk: null, // walk phase in radians, null = standing
     legSpread: 0.06, hop: 0,
@@ -116,7 +116,7 @@
     ctx.translate(x, y - P.hop);
     ctx.scale(P.facing < 0 ? -1 : 1, 1);
     // squash & stretch around the feet
-    ctx.scale(1 / Math.sqrt(P.squash), P.squash);
+    ctx.scale(1 / P.squash, P.squash); // area-preserving squash & stretch (2D)
 
     // ---- legs ----
     const hipY = -legLen, hipX = C.hip * H * 0.28;
@@ -249,14 +249,15 @@
     // back hair (bun)
     const hr = C.hair;
     if (hr.type === 'bun') {
-      ellipse(ctx, side ? -w * 0.3 : 0, -h * 0.55, h * 0.2, h * 0.17); fillStroke(ctx, hr.color, lw);
+      ellipse(ctx, (side ? -w * 0.3 : 0) + (P.drag || 0) * h * 0.1, -h * 0.55, h * 0.2, h * 0.17); fillStroke(ctx, hr.color, lw);
     }
     // skull
     headPath(ctx, w, h, C.headTop, C.headBot, C.headSq);
     fillStroke(ctx, C.skin, lw);
 
-    // hair on top
+    // hair on top (swings with P.drag: follow-through from the body's motion)
     ctx.save();
+    if (P.drag && (hr.type === 'tuft' || hr.type === 'bun')) { ctx.translate(0, -h * 0.42); ctx.rotate(P.drag * (hr.type === 'tuft' ? 0.5 : 0.18)); ctx.translate(0, h * 0.42); }
     if (hr.type === 'tuft') {
       ctx.beginPath();
       const t = -h * 0.5, bx = side ? -w * 0.05 : 0;
@@ -307,7 +308,7 @@
     ctx.save();
     if (side) { headPath(ctx, w, h, C.headTop, C.headBot, C.headSq); ctx.clip(); }
     const eyeY = -h * 0.04 + (C.hair.type === 'cap' ? h * 0.03 : 0);
-    const eyeR = h * 0.12 * F.eye;
+    const eyeR = h * 0.12 * F.eye * (P.eyeScale || 1);
     const gap = eyeR * 0.95;
     const lx = P.look[0], ly = P.look[1];
     const eyes = side ? [w * 0.2] : [-gap, gap]; // profile = ONE eye
@@ -318,7 +319,7 @@
       // pupil
       const pr = Math.max(lw * 0.9, eyeR * 0.2 * (F.pupil || 1));
       const px = ex + (side ? rx * 0.35 : 0) + lx * rx * 0.5, py = eyeY + ly * ry * 0.5;
-      const lid = Math.max(F.lid || 0, P.blink);
+      const lid = Math.max(F.lid || 0, P.blink, P.squint || 0);
       if (lid < 0.92) { ellipse(ctx, px, py + ry * lid * 0.3, pr, pr); ctx.fillStyle = INK; ctx.fill(); }
       if (lid > 0.02) { // eyelid
         ctx.save(); ellipse(ctx, ex, eyeY, rx, ry); ctx.clip();

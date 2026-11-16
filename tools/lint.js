@@ -11,7 +11,9 @@ const { chromium } = require('playwright'); const path = require('path');
   await p.evaluate(() => window.READY);
   const issues = await p.evaluate(() => window.lintProject(0.1));
   await b.close();
-  if (!issues.length) { console.log('lint: OK — faces inside the safe box, no caption overlaps, CTA placed, no banned sounds'); return; }
-  for (const i of issues) console.log(i.scene === '-' ? `lint: ${i.problem}` : `lint: ${i.scene}  ${i.from.toFixed(1)}–${i.to.toFixed(1)} s  ${i.who}: ${i.problem}`);
+  const errs = issues.filter((i) => !i.warn), warns = issues.filter((i) => i.warn);
+  for (const i of warns) console.log(`lint (warn): ${i.scene}  from ${i.from.toFixed(1)} s  ${i.problem}`);
+  if (!errs.length) { console.log('lint: OK — faces inside the safe box, no caption overlaps, CTA placed, no banned sounds'); return; }
+  for (const i of errs) console.log(i.scene === '-' ? `lint: ${i.problem}` : `lint: ${i.scene}  ${i.from.toFixed(1)}–${i.to.toFixed(1)} s  ${i.who}: ${i.problem}`);
   process.exitCode = 2;
 })();

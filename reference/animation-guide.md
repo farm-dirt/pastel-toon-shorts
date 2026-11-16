@@ -21,6 +21,31 @@ Motion rules (the twitch lesson from the earlier `short-v1` skill): no fast wigg
 breathing are slow sines built into the engine; never add per-word nods. Everything is a pure
 function of time (no hidden state), so scenes can be previewed and rendered in any order.
 
+## Built-in life (automatic, no keys needed; research Nov 2026, see the animation report)
+Every actor now gets these for free. Turn them off per actor with `"life": false` (or project-wide `"life": false`).
+- **Weight:** a big keyed change of `armL`/`armR`/`headTilt`/`lean` gets a small wind-up before it (auto
+  anticipation, ~8 %) and overshoots ~13 % then settles after it. Small or `snap` moves are left alone (no twitch).
+- **Squash & stretch:** characters stretch while a `hop` rises/falls and squash on landing; area is preserved.
+  Every landing also gets a dust puff (`"dust": false` on the actor to skip it) and the contact shadow shrinks mid-air.
+- **Follow-through:** the body leans into fast slides, arms trail jumps, hair tufts/buns swing with the motion.
+- **Blinks:** close 2 / hold 1 / open 4 frames on a hashed schedule (some double blinks), plus a forced blink
+  on every expression change (it hides the face swap) and on facing/view changes.
+- **Eye darts:** small 3-frame saccades every ~1-2 s on top of `look`; the head follows the look a beat later
+  (`"darts": false` to keep the eyes still, e.g. a fixed stare).
+- **Smears:** an actor moving faster than ~1400 px/s leaves two faint ghosts (`"smear": false` to skip).
+- **Moving hold:** a shot with 0-1 camera keys slowly pushes in 2.5 % over the shot (`"drift": false` or a number).
+
+## Takes (reactions) — use these for every big reaction
+`{"t": 2.05, "take": "shock"}` = anticipation (squash + squint, 5 frames before t) → accent at t (stretch, eye pop,
+small hop) → springy settle, and the face switches to `shock`. Any face name works (`happy`, `angry`, `worried`…);
+`"take": "double"` adds a double-take head shake (give it a `face` too). Key the take 3-6 frames AFTER the narration
+word that triggers it (they hear it, then react); for a comic punchline put a squint on the word before.
+Hold the settled reaction 0.8-1.5 s before the next change.
+
+## Easing
+`inout` (default), `out`, `in`, `back` (overshoot), `snap` (instant), `linear`, **`spring`** (lands, overshoots
+~12 %, settles: camera pushes, pops), **`backinout`** (gentle wind-up + overshoot for a whole move).
+
 ## Camera
 Keys `{t, x, y, zoom, roll, ease}` in scene-local seconds; (x,y) = world point at frame centre.
 Every shot gets an automatic 6 % settle-in over 0.25 s. Variety rules:
@@ -32,6 +57,21 @@ Every shot gets an automatic 6 % settle-in over 0.25 s. Variety rules:
 `cut` (default; most cuts should be cuts) · `whip` 0.3 s fast pan, for "meanwhile/he ran" · `pop`
 0.3 s punch-in + flash, for arriving somewhere · `iris` 0.5 s circle close/open, for the ending beat or time skip · `wipe`.
 Max ~1 non-cut transition per 3 scenes.
+
+## Impact & emphasis kit (scene `fx`)
+- `{"type":"punch","t":T,"amp":0.15}` zoom punch: snaps in and springs back (the camera, so it hits everything).
+- `{"type":"shake","t":T,"amp":45,"dur":0.4}` trauma shake: smooth noise on x/y/roll, fades as (1-age)². 40-60 for big hits.
+- `{"type":"hitstop","t":T,"dur":0.15,"who":"bramble"}` characters freeze for dur (2-8 frames) while camera/fx run; `who` jitters.
+- `{"type":"impactframe","t":T}` 1-2 inverted frames on the hit. Max 1-2 per short; never more than 3 flashes a second.
+- `{"type":"focuslines","t":T,"dur":0.6,"x":540,"y":900}` anime emphasis lines around a point (realisations, reveals).
+- Particles (seeded, free to render): `dust` (ground puff), `debris` (chunks with gravity), `confetti` — `x`,`y`,`size`,`dur`,`n`,`color`.
+A big hit = `hitstop` + `impactframe` + `shake` + `debris`/`dust` + a sound, all at the same t.
+
+## Mood & atmosphere (scene keys)
+- `"mood": "dark" | "night" | "cold" | "warm" | "danger" | "eerie"` multiplies a tint over the shot, eased in over
+  `moodIn` s (default 0.6). Horror beat: palette drop (`dark`) → slow push-in → sound → partial reveal → hard-cut reveal.
+- `"ambient": "fireflies" | "motes"` floating lights/dust drifting through the whole shot.
+- Project `"twos": true` animates characters on twos (TV-cartoon cadence; camera stays smooth). A/B it before using.
 
 ## FX (`fx` list, scene-local `t`)
 `exclaim`, `question`, `sweat`, `sparkle`, `impact`, `puff`, `speedlines`, `hearts`, `zzz` (world x,y,size,dur)

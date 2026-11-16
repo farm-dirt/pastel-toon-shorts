@@ -39,7 +39,7 @@ copying the text to the clipboard. The user then types "check" and Claude reads 
 - Default: 1080×1920, 30 fps, H.264 High, CRF 16 medium, yuv420p, GOP 30, `+faststart`, AAC 192k.
 - 30 fps is right for this style (flat cartoon, smooth camera). Use 24 fps only if the user wants
   a choppier "on twos" TV feel — ask first.
-- Speed: ≈ 1.6 s render per 1 s of video on 2 CPUs (a 45 s short ≈ 75 s).
+- Speed: ≈ 2.2 s render per 1 s of video on 2 CPUs (a 45 s short ≈ 100 s); smears and particles add a little on fast shots.
 - Partial render for a moving check: `--from S --to S --out file.mp4`.
 
 ## Spot check before showing the preview (Claude looks, not the user)
