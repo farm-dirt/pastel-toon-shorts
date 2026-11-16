@@ -15,7 +15,7 @@
 | Panic | `worried` + `sweat` fx + small `shake` |
 | Defeat | `sleepy`/`worried`, `squash:0.92`, `headTilt:0.2`, arms hanging, `slide_down`/`wahwah` |
 | Entrance | walk in from off-screen (x −150 → target) with `walk:true`; feet never slide (phase follows distance) |
-| Talking | add `speaks:[[from,to]]` (scene-local s) — mouth follows the real voice |
+| Reacting to the narration | the narrator is the ONLY voice: never add `speaks`. Show a reaction instead (face change + `exclaim`/`question` fx + a sound), or an on-screen text pop-up |
 
 Motion rules (the twitch lesson from the earlier `short-v1` skill): no fast wiggles. Head sway and
 breathing are slow sines built into the engine; never add per-word nods. Everything is a pure
@@ -49,7 +49,7 @@ Max ~1 non-cut transition per 3 scenes.
     "id": "s1", "start": 0, "end": 3.2, "location": "park", "transition": "cut",
     "desc": "Wide park. Toby strolls in, spots a coin, double-take.",
     "camera": [{"t": 0, "x": 540, "y": 860, "zoom": 1}, {"t": 2.4, "x": 560, "y": 940, "zoom": 1.3, "ease": "back"}],
-    "actors": [{"who": "toby", "h": 820, "speaks": [[0.4, 2.9]], "keys": [
+    "actors": [{"who": "toby", "h": 820, "keys": [
       {"t": 0, "x": 120, "y": 1560, "walk": true, "face": "happy"},
       {"t": 1.5, "x": 470, "walk": true},
       {"t": 1.6, "walk": false, "view": "front", "look": [0.4, 0.6]},

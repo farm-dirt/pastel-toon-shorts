@@ -45,6 +45,8 @@ def main():
         proj['captions'] = tim['captions']
     # sanity: scenes must tile the whole voice-over with no gaps
     sc = proj['scenes']; dur = tim['dur']
+    if not sc:
+        sys.exit('!! project.json has no scenes yet: write the shot plan first')
     sc[0]['start'] = 0.0; sc[-1]['end'] = round(dur, 4)
     for a, b in zip(sc, sc[1:]):
         if abs(a['end'] - b['start']) > 1e-3:

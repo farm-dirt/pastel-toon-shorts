@@ -19,6 +19,7 @@ import json, os, subprocess, sys, re
 import numpy as np
 
 SR = 48000
+BANNED = {'wind', 'dark_click'}  # user rule, Nov 2026: low rumbles that drone under scenes; use wind_howl
 rng = np.random.default_rng(7)
 
 
@@ -251,9 +252,14 @@ def main():
         fade = int(0.4 * SR); m[-fade:] *= np.linspace(1, 0, fade)
         bed += m * g
     fx = np.zeros(len(voice))
+    bad = [c['name'] for c in proj.get('sfx', []) if c['name'] in BANNED]
+    if bad:
+        sys.exit('!! banned sound(s) in project.json (user rule): %s -> remove them or pick another' % ', '.join(sorted(set(bad))))
+    unknown = [c['name'] for c in proj.get('sfx', []) if c['name'] not in SFX]
+    if unknown:
+        sys.exit('!! unknown sfx: %s -> available: %s' % (', '.join(sorted(set(unknown))), ', '.join(sorted(SFX))))
     for cue in proj.get('sfx', []):
         name = cue['name']
-        if name not in SFX: print('!! unknown sfx', name, '-> available:', ', '.join(sorted(SFX))); continue
         s = shape_cue(SFX[name](), cue); s = s / (np.abs(s).max() + 1e-9) * vpk * mixcfg['sfx'] * cue.get('gain', 1.0)
         i = int(cue['t'] * SR); fx[i:i + len(s)] += s[:max(0, len(fx) - i)]
     # room tone ~ -34 dB under the voice: inaudible under speech, but pauses never go to dead air
@@ -278,7 +284,7 @@ def main():
 
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == '--list':
-        print(', '.join(sorted(SFX)))
+        print(', '.join(sorted(n for n in SFX if n not in BANNED)))
         print('music tracks:', ', '.join(music_tracks()) or 'none (assets/music/ is empty)')
         print('recorded:', ', '.join(sorted(RECORDED)) if RECORDED else 'none (assets/sfx/ is empty or missing)')
     else:

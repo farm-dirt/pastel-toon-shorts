@@ -343,6 +343,8 @@
   }
 
   // ---------- lint: find caption/face overlaps and faces cut off by the frame ----------
+  const SAFE = { left: 48, right: 888, top: 180, caution: 1250, bottom: 1500 };
+  const BANNED_SFX = ['wind', 'dark_click'];
   function lint(ctx, project, step) {
     step = step || 0.1; const issues = [], y = project.captionY || 400, dur = project.timing.dur;
     for (let t = 0; t < dur; t += step) {
@@ -353,9 +355,24 @@
         if (h.x < -50 || h.x > W + 50 || h.bottom < 0 || h.top > H) continue; // fully off-screen (entering/leaving): fine
         if (cap && h.top < y + 70 && h.bottom > y - 70) issues.push({ scene: sc.id, t: +t.toFixed(2), who: h.who, problem: 'caption covers face' });
         else if (h.top < 0 && h.bottom > 0) issues.push({ scene: sc.id, t: +t.toFixed(2), who: h.who, problem: 'head cut off at top' });
-        if (h.bottom > H * 0.8 && h.top < H) issues.push({ scene: sc.id, t: +t.toFixed(2), who: h.who, problem: 'face inside bottom YouTube UI zone' });
+        // YouTube Shorts safe box (SKILL.md): faces inside x 48-888, y 180-1500; y 1250-1500 is a caution strip
+        const hw = (h.bottom - h.top) * 0.4;
+        if (h.x + hw > SAFE.right) issues.push({ scene: sc.id, t: +t.toFixed(2), who: h.who, problem: 'face under the YouTube buttons (right edge, x > 888)' });
+        else if (h.x - hw < SAFE.left) issues.push({ scene: sc.id, t: +t.toFixed(2), who: h.who, problem: 'face too close to the left edge (x < 48)' });
+        if (h.top < SAFE.top && h.bottom > 0) issues.push({ scene: sc.id, t: +t.toFixed(2), who: h.who, problem: 'face under the YouTube search bar (y < 180)' });
+        if (h.bottom > SAFE.bottom && h.top < H) issues.push({ scene: sc.id, t: +t.toFixed(2), who: h.who, problem: 'face inside bottom YouTube UI zone (y > 1500)' });
+        else if (h.bottom > SAFE.caution && h.top < H) issues.push({ scene: sc.id, t: +t.toFixed(2), who: h.who, problem: 'face in the caution strip (y 1250-1500, long titles cover it)' });
       }
     }
+    // project-level checks (no time range)
+    const proj = (problem) => issues.push({ scene: '-', t: 0, who: 'project', problem });
+    const c = project.cta;
+    if (!c) proj('no subscribe CTA: add "cta": {"s", "e", "tap", "text"} at 45-60 % of the video');
+    else {
+      if (c.s < 3 || c.e > dur - 3) proj('CTA must not be in the first or last 3 s');
+      if (c.s < 0.4 * dur || c.s > 0.65 * dur) proj(`CTA starts at ${c.s} s; put it at 45-60 % of ${dur.toFixed(1)} s`);
+    }
+    for (const cue of project.sfx || []) if (BANNED_SFX.includes(cue.name)) proj(`banned sound "${cue.name}" at ${cue.t} s (user rule): remove it`);
     // merge consecutive samples
     const out = [];
     for (const i of issues) {

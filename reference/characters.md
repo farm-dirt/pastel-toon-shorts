@@ -22,7 +22,7 @@ Use `h: 820` (world px) as the standard size; scale with camera zoom, not with `
 
 ## Expressions (`face`)
 neutral · happy · grin · shock · angry · worried · smug · talk · sleepy.
-`talk` is set automatically while an actor `speaks`; mouth opening follows the voice envelope.
+`talk` exists in the rig but is NOT used: the narrator is the only voice, so never give an actor `speaks` (SKILL.md rule).
 
 ## Pose controls
 `armL`/`armR` = `[shoulder, elbow]` radians (0 = hanging down, + = outward/forward).

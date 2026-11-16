@@ -16,3 +16,14 @@ the same ducking under the voice and the same `stops` (silence beats) apply. Fil
 | `dark_fantasy_synth` | Underworld, monsters, curses |
 | `dark_ambient` | Night, eerie places |
 | `horror_atmosphere` | Scary myths, creature reveals |
+
+## Sources and licences (fill in)
+
+These files came from the user's own downloads. Where each file came from and its licence were not
+recorded when they were added. Fill in the table the next time you have the source pages open, so you
+can show you are allowed to use a file if a video is ever claimed. Keep only files whose licence allows
+use in monetised videos.
+
+| File | Source (site / author / link) | Licence |
+| --- | --- | --- |
+| (each file) | not recorded | not recorded |

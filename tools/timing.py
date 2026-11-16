@@ -34,11 +34,13 @@ def rms_db(x, hop):
 
 
 def syllables(w):
-    w = re.sub(r'[^a-z]', '', w.lower())
+    w = w.lower()
+    digits = re.sub(r'[^0-9]', '', w)
+    if digits and not re.search(r'[a-z]', w):
+        return max(2, len(digits))  # "1521" is said as several syllables, not one
+    w = re.sub(r'[^a-z]', '', w)
     if not w:
         return 1
-    if w.isdigit():
-        return 2
     n = len(re.findall(r'[aeiouy]+', w))
     if w.endswith('e') and n > 1 and not w.endswith(('le', 'ee')):
         n -= 1
@@ -83,6 +85,8 @@ def main():
         cur = e
     if dur - cur > 0.05:
         speech.append([round(cur, 3), round(dur, 3)])
+    if not speech:
+        sys.exit('!! no speech found in %s: the file is silent or too quiet. Check the upload.' % voice)
 
     res = {'dur': round(dur, 4), 'fps': FPS, 'envFps': FPS, 'env': [round(float(v), 3) for v in env],
            'speech': speech, 'pauses': pauses}
@@ -153,6 +157,7 @@ def main():
             e = c[-1]['e']
             nxt = caps[k + 1][0]['s'] if k + 1 < len(caps) else e + 0.4
             e = min(nxt, e + 0.25) if nxt - e < 0.6 else e + 0.25  # hold through tiny gaps
+            e = min(e, dur)  # never past the end of the voice-over
             res['captions'].append({'s': c[0]['s'], 'e': round(e, 3),
                                     'text': re.sub(r'[.,;:]+$', '', ' '.join(w['w'] for w in c)).lower()})
     json.dump(res, open(out, 'w'), indent=None, separators=(',', ':'))
