@@ -40,3 +40,41 @@ the narrator might read differently.
 ## Voice-over instructions to give the user
 Read `script/script.txt` exactly; MP3 or WAV; quiet room; a short breath between sentences;
 ElevenLabs or own voice both fine. Upload the file here when done.
+
+## Model script (user-written, Bal-Bal, 16 Nov 2026) — the house narration style
+One beat per line (the voice pauses at each break). Copy the moves, never the words.
+```
+This corpse has no fingerprints.
+It's three in the morning at Lola's wake in Palawan.
+And someone has to stay awake. All night.
+Because locals tell stories of the Bal-Bal, a creature that steals corpses and leaves something else in their place.
+A banana trunk.
+Same face. Same hands. Almost perfect.
+Toby volunteers to guard his grandmother's coffin. His cousins laugh.
+"She's dead. Where's she going?"
+But the old folks aren't laughing.
+They say there's a way to recognize a Bal-Bal.
+Watch the guests.
+One of them keeps yawning. Every time he passes the coffin.
+Then the candles begin to flicker.
+Toby blinks.
+Just for a moment.
+And falls asleep.
+When he wakes, the yawning guest is gone.
+Lola is still in her coffin.
+Her face looks the same. Her hands, too.
+Almost too perfect.
+So Toby takes a candle, rubs soot onto her thumb, and presses it against a sheet of paper.
+He lifts it.
+Nothing.
+No ridges. No lines. No fingerprint.
+Because whatever is lying inside that coffin...
+isn't Lola.
+And outside the house...
+Someone is still yawning.
+```
+Why it works: impossible hook in 5 words → plain time/place → the creature explained once in everyday
+words → doubter with one short taunt, turned by "But the old folks aren't laughing." → a command that makes
+the viewer a detective ("Watch the guests.") → slow-motion cascade at the low point → echo ("Almost perfect"
+→ "Almost too perfect") → a clue anyone could do → reveal split over "…" with the key word last → quiet
+threat-is-still-there ending that loops to the hook.

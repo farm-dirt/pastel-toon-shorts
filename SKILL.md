@@ -57,19 +57,22 @@ Wait for the user to pick. Do not proceed on your own.
 Script and voice-over are combined into a single step so the user only waits once.
 Write the script with the template in `content-playbook.md`: hook (0-2 s), setup, escalation,
 twist/payoff, button ending (no spoken CTA, see below). Per section: narration, est. duration
-(~2.6 words/s), visuals, character actions, transition. Target 40-55 s (≈ 105-140 words) for a Story,
-20-30 s (≈ 50-75 words) for a Creature card.
+(~2.6 words/s), visuals, character actions, transition. Target 50-65 s (≈ 130-170 words) for a Story,
+20-30 s (≈ 50-75 words) for a Creature card. The user's model script (Bal-Bal, 16 Nov 2026) is ~180 words: if
+a script runs past ~65 s, say so and offer 2-3 optional cuts; never cut the user's lines silently.
 **Mystery formula for Stories (from two viral reference Shorts, user request 15 Nov 2026).** Write every
 Story as a mystery the viewer solves along with the narrator. The template sections above still apply;
 this is how to fill them:
 1. **Looks-wrong hook (0-3 s):** open on the main character doing something that looks foolish or wrong,
    or on a claim that sounds impossible ("He hangs a stingray tail by every window." / "This baby has never
    cried. Not once."). The viewer's "why?" is the hook.
-2. **Rewind (3-8 s):** "See, …" or "It all started when…" jumps back to the setup in one sentence.
+2. **Rewind (3-8 s):** one plain scene-setting sentence with time + place ("It's three in the morning at
+   Lola's wake in Palawan."). "See, …" or "It all started when…" are optional.
 3. **Stakes:** what can be won or lost, big and simple, said by ~10 s.
-4. **Doubter:** someone thinks the hero is crazy or wrong (neighbours, elders, family, a rival). No
-   dialogue: say it as narration ("His neighbours laugh. Loudly.") plus a picture reaction or pop-up
-   text, never a quoted line.
+4. **Doubter:** someone thinks the hero is crazy or wrong (neighbours, elders, family, a rival). Say it as
+   narration ("His cousins laugh.") plus a picture reaction, and you MAY add ONE short quoted taunt (≤ 8 words)
+   that the narrator reads in his own voice ("She's dead. Where's she going?"). Then turn it with a
+   counter-line ("But the old folks aren't laughing.").
 5. **Low point:** the normal way seems to win at first; the hero looks dumb.
 6. **Clue shown with everyday things:** reveal the secret in steps the viewer can picture: a coin, a
    finger's width, a grain of salt, a cup of rice, a heartbeat. No textbook words; the viewer should
@@ -90,15 +93,17 @@ shape: one weird trait → what it does → the one way to survive it.
   after midnight…"). The hook text asks a SECOND question and never repeats the narration (narration
   "This baby never cries." + text "Look at its feet").
 - **Link beats with "but" / "therefore", never "and then"** (avoids boring chronology).
-- **Re-hook every ~8-10 s**: a new question, reveal or reversal ("But that isn't the scary part.").
+- **Re-hook every ~8-10 s**: a new question, reveal or reversal ("But the old folks aren't laughing." /
+  "Watch the guests.").
 - **Present tense (user rule, 15 Nov 2026)**: tell the main action as if it is happening right now ("He
   hangs a stingray tail by every window." / "The baby stops crying."). Why: it feels live, like watching it
   happen, not hearing a history lesson. Background can stay in past tense ("Lolas used to warn…"), but
   never switch tense in the middle of a scene.
 - **Show, don't narrate**: the narrator sets up, the picture delivers the joke or scare. Never narrate an
   emotion the face already shows. Mark at least 2 moments where the picture says something the narration doesn't.
-- **Narration only — one voice, no dialogue.** The narrator is the ONLY voice in the short: no
-  in-character lines, no quoted speech, no second speaker, no separate clips (user rule). Keep the cast
+- **Narration only — one voice.** The narrator is the ONLY voice in the short: no in-character
+  recordings, no second speaker, no separate clips (user rule). The only exception is the one short quoted
+  taunt the narrator reads himself (see Doubter). Keep the cast
   alive with the picture instead: faces, gasps drawn as reactions, sound effects, and on-screen text
   (e.g. a big "HEHEHE" or "!!" pop-up). Write what a character would say as narration
   ("Pip spots something in the sky."). Never use `speaks` on actors.
@@ -109,6 +114,24 @@ shape: one weird trait → what it does → the one way to survive it.
   this is who the channel is for, and it keeps the content honestly "not made for kids".
 - **Mystery check (Stories):** point to the looks-wrong hook, the doubter, the everyday-thing clue and
   the reversal. If one is missing, fix it or say in the script message why this story doesn't need it.
+**Narration style: write like the user's model script (Bal-Bal, 16 Nov 2026; full text in
+`content-playbook.md` → "Model script").** Read it before writing any Story. The moves to copy:
+- **One beat per line.** Each line in `script.txt` is one breath; the voice pauses at every line break.
+- **Mix one plain full sentence with fragments.** Explain the creature once, in everyday words, with its
+  name and what it does ("…the Bal-Bal, a creature that steals corpses and leaves something else in
+  their place."). Then let fragments carry it ("A banana trunk.").
+- **Triplets** for the creepy detail and for the clue ("Same face. Same hands. Almost perfect." /
+  "No ridges. No lines. No fingerprint.").
+- **Echo** an early phrase at the reveal so the viewer connects it ("Almost perfect." → "Almost too perfect.").
+- **Talk to the viewer once** with a short command that makes them a detective ("Watch the guests.").
+- **Slow-motion cascade at the low point:** 3-4 tiny lines that stretch the scary second ("Toby blinks." /
+  "Just for a moment." / "And falls asleep.").
+- **The clue is an action anyone could do,** in one sentence with three steps ("…takes a candle, rubs soot
+  onto her thumb, and presses it against a sheet of paper."), then "He lifts it." / "Nothing."
+- **Split the reveal over a "…" line break with the key word last** ("Because whatever is lying inside that
+  coffin…" / "isn't Lola."), then end on a quiet last image split the same way that hints the threat is still
+  out there ("And outside the house…" / "Someone is still yawning.").
+- Starting lines with "And", "So" or "Because" is fine (it pushes the story on); still never "and then".
 **Voice + settings to suggest every time (the user is on FREE ElevenLabs):**
 - **Voice:** the channel's narrator is **Jon – Catalyst**; keep the same voice on every short so viewers
   recognise the series. Only suggest another voice if the user asks (then: a calm, clear storyteller voice
