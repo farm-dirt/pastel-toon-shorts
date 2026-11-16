@@ -12,7 +12,7 @@ LEVELS (user preference: background must never fight the voice):
   music  = 8 % of the voice level during speech (-22 dB), rises to 14 % in long pauses
   sfx    = peaks at 35 % of the voice peak
   room   = 2 % of the voice level everywhere (quiet air), so the mix is never digital silence
-Override in project.json: "mix": {"music": 0.08, "musicPause": 0.14, "sfx": 0.35, "roomTone": 0.02}
+Override in project.json: "mix": {"music": 0.08, "musicPause": 0.3, "pauseMin": 0.18, "smooth": 0.08, "sfx": 0.35, "roomTone": 0.02}
 Recorded music: "music": {"track": "greek_folk", "start": 0, "stops": [[a, b]]} (files in assets/music/)
 """
 import json, os, subprocess, sys, re
@@ -222,7 +222,7 @@ def main():
     P = sys.argv[1]
     proj = json.load(open(os.path.join(P, 'project-files', 'project.json')))
     tim = json.load(open(os.path.join(P, 'project-files', 'timing.json')))
-    mixcfg = {'music': 0.08, 'musicPause': 0.14, 'sfx': 0.35}; mixcfg.update(proj.get('mix', {}))
+    mixcfg = {'music': 0.08, 'musicPause': 0.3, 'sfx': 0.35}; mixcfg.update(proj.get('mix', {}))
     vpath = os.path.join(P, 'voice-over', proj['voice'])
     raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vpath, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
     voice = np.frombuffer(raw, np.float32).astype(np.float64)
@@ -244,12 +244,14 @@ def main():
             m = music(dur, mcfg.get('bpm', 112), mcfg.get('key', 0), mcfg.get('stops', []))[:len(voice)]
         if len(m) < len(voice): m = np.concatenate([m, np.zeros(len(voice) - len(m))])
         m = m / rms(m) * vr
-        # gain curve: music% during speech, musicPause% in pauses >= 0.6 s, smoothed 150 ms
+        # gain curve: music% during speech, musicPause% in EVERY pause (>= pauseMin, default 0.18 s), smoothed 80 ms.
+        # User rule (Nov 2026, Kappa short): no dead sound. Lifting only pauses >= 0.6 s left every breath between
+        # lines at 8 %, so the sound kept sagging ~25 dB between sentences. Rick's-Clips style = a bed that never dips.
         g = np.full(len(voice), mixcfg['music'])
         for a, b in tim['pauses']:
-            if b - a >= 0.6: g[int(a * SR):int(b * SR)] = mixcfg['musicPause']
-        k = int(0.15 * SR); g = np.convolve(g, np.ones(k) / k, mode='same')
-        fade = int(0.4 * SR); m[-fade:] *= np.linspace(1, 0, fade)
+            if b - a >= mixcfg.get('pauseMin', 0.18): g[int(a * SR):int(b * SR)] = mixcfg['musicPause']
+        k = int(mixcfg.get('smooth', 0.08) * SR); g = np.convolve(g, np.ones(k) / k, mode='same')   # 80 ms: short breaths fill too
+        fade = int(0.08 * SR); m[-fade:] *= np.linspace(1, 0, fade)   # tiny de-click only: the loop cut must not fade to silence
         bed += m * g
     fx = np.zeros(len(voice))
     bad = [c['name'] for c in proj.get('sfx', []) if c['name'] in BANNED]
