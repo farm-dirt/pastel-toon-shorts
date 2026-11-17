@@ -67,6 +67,15 @@ Max ~1 non-cut transition per 3 scenes.
 - Particles (seeded, free to render): `dust` (ground puff), `debris` (chunks with gravity), `confetti` — `x`,`y`,`size`,`dur`,`n`,`color`.
 A big hit = `hitstop` + `impactframe` + `shake` + `debris`/`dust` + a sound, all at the same t.
 
+## Story tone (project key, set once per short)
+- `"tone": "light" | "mystery" | "dark"` in project.json grades the whole video. A scene may override it
+  with its own `"tone"` (e.g. one warm `light` flashback inside a `dark` short).
+  - `light` (default): the normal pastel cartoon. Funny, silly or harmless legends.
+  - `mystery`: slightly muted and cool, stronger vignette. Creepy-but-not-sad legends, survival rules.
+  - `dark`: muted, dusky purple world, heavy dark vignette, characters dimmed a little so they sit in
+    the same light. Death, ghosts, grief, curses, tragedies.
+  The grade hits the background hardest; faces stay readable. Scene `mood` tints still stack on top.
+
 ## Mood & atmosphere (scene keys)
 - `"mood": "dark" | "night" | "cold" | "warm" | "danger" | "eerie"` multiplies a tint over the shot, eased in over
   `moodIn` s (default 0.6). Horror beat: palette drop (`dark`) → slow push-in → sound → partial reveal → hard-cut reveal.

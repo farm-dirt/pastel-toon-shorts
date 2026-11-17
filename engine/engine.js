@@ -343,6 +343,23 @@
     }
   }
   // mood tints (multiply), eased in over the first moodIn seconds of the scene
+  // whole-video TONE (project.tone, a scene can override with scene.tone): grades the WORLD only
+  // (background), so characters stay readable, then sets the vignette strength.
+  //   light   = normal pastel cartoon (default)   mystery = slightly muted + cool
+  //   dark    = muted, dusky, heavy vignette (sad/scary legends: death, ghosts, curses)
+  const TONES = {
+    light:   { desat: 0,    tint: null,      tintA: 0,    vig: 0.16, vigC: '60,40,40' },
+    mystery: { desat: 0.25, tint: '#9fa6c8', tintA: 0.3,  vig: 0.32, vigC: '30,25,50', all: '#e4e2f0', allA: 0.25 },
+    dark:    { desat: 0.55, tint: '#3f3a66', tintA: 0.55, vig: 0.6,  vigC: '10,6,20',  all: '#b9b2d6', allA: 0.4 },
+  };
+  function toneOf(project, scene) { return TONES[scene.tone || project.tone] || TONES.light; }
+  function gradeWorld(ctx, tone) {
+    if (!tone.desat && !tone.tintA) return;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (tone.desat) { ctx.globalCompositeOperation = 'saturation'; ctx.globalAlpha = tone.desat; ctx.fillStyle = '#808080'; ctx.fillRect(0, 0, W, H); }
+    if (tone.tintA) { ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = tone.tintA; ctx.fillStyle = tone.tint; ctx.fillRect(0, 0, W, H); }
+    ctx.restore();
+  }
   const MOODS = { dark: ['#7d78a8', 0.6], night: ['#6f7fb8', 0.5], cold: ['#a9c4e6', 0.45], warm: ['#ffcf9e', 0.35], danger: ['#e0767a', 0.45], eerie: ['#8fb39a', 0.45] };
 
   // ---------- one scene into ctx ----------
@@ -353,6 +370,8 @@
     applyCamera(ctx, cam);
     PT.drawBG(ctx, scene.location, gt);
     if (project.custom && project.custom.bg && project.custom.bg[scene.location]) project.custom.bg[scene.location](ctx, gt, lt);
+    const tone = toneOf(project, scene);
+    gradeWorld(ctx, tone);
     if (scene.ambient) drawAmbient(ctx, scene.ambient, gt);
     // layers sorted by y so nearer things draw on top
     const items = [], held = [], handsOf = {};
@@ -442,14 +461,17 @@
         ctx.restore();
       }
     }
-    // gentle vignette (keeps eyes centred)
-    if (!drawScene._vig) {
+    if (tone.all) { ctx.save(); ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = tone.allA; ctx.fillStyle = tone.all; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+    // vignette (keeps eyes centred); strength and colour follow the tone
+    const vk = tone.vig + ',' + tone.vigC;
+    drawScene._vig = drawScene._vig || {};
+    if (!drawScene._vig[vk]) {
       const c = (typeof OffscreenCanvas !== 'undefined') ? new OffscreenCanvas(W, H) : Object.assign(document.createElement('canvas'), { width: W, height: H });
       const v = c.getContext('2d'), g = v.createRadialGradient(W / 2, H * 0.48, H * 0.35, W / 2, H * 0.5, H * 0.75);
-      g.addColorStop(0, 'rgba(60,40,40,0)'); g.addColorStop(1, 'rgba(60,40,40,0.16)'); v.fillStyle = g; v.fillRect(0, 0, W, H);
-      drawScene._vig = c;
+      g.addColorStop(0, `rgba(${tone.vigC},0)`); g.addColorStop(1, `rgba(${tone.vigC},${tone.vig})`); v.fillStyle = g; v.fillRect(0, 0, W, H);
+      drawScene._vig[vk] = c;
     }
-    ctx.drawImage(drawScene._vig, 0, 0);
+    ctx.drawImage(drawScene._vig[vk], 0, 0);
   }
 
   // ---------- transitions ----------
