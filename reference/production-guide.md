@@ -27,6 +27,9 @@ syllable-proportional breaks — check the report and adjust captions by ear in 
   digital silence. Dead air sounds like the video froze on a phone (Kumakatok short, Nov 2026: 0.5 s of
   total silence at 37 s, right before the payoff). `qa.py` fails any silence longer than 0.15 s.
 - Available SFX: `python3 tools/audio.py --list`.
+- **Custom sounds per short:** put WAV files in `<project>/assets/sfx/` (design them with numpy: a wail, a
+  metallic ping, a creak). `audio.py` loads them for that short only, by file name; a name that clashes with
+  the library is refused. Check each one by its waveform/spectrum and length before using it.
 
 ## Preview page
 The preview loops at the end (like a Short), has a ⛶ Full screen button (double-click / F also work;

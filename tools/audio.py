@@ -222,6 +222,16 @@ def main():
     P = sys.argv[1]
     proj = json.load(open(os.path.join(P, 'project-files', 'project.json')))
     tim = json.load(open(os.path.join(P, 'project-files', 'timing.json')))
+    # Per-short custom sounds (designed for this short): PROJECT_DIR/assets/sfx/<name>.wav -> "<name>".
+    # They are added to the library for this short only; a name already in the library is refused (rename it).
+    psfx = os.path.join(P, 'assets', 'sfx')
+    if os.path.isdir(psfx):
+        for fn in sorted(os.listdir(psfx)):
+            stem, ext = os.path.splitext(fn)
+            if ext.lower() not in ('.wav', '.mp3', '.flac', '.ogg'): continue
+            if stem in SFX: sys.exit('!! custom sound %s clashes with a library sound: rename the file' % fn)
+            SFX[stem] = (lambda q=os.path.join(psfx, fn): load_audio(q))
+            print('custom sound:', stem)
     mixcfg = {'music': 0.08, 'musicPause': 0.3, 'sfx': 0.35}; mixcfg.update(proj.get('mix', {}))
     vpath = os.path.join(P, 'voice-over', proj['voice'])
     raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vpath, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
