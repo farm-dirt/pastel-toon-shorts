@@ -80,7 +80,9 @@ resolution, fps, frame count = round(dur×30), duration = voice ±0.1 s, H.264/y
    + air, `park`/`street` = sparse birds + air, `shop`/`kitchen` = room air + soft clock, night scenes with mood
    dark/eerie/danger (or tone dark) = `eerie` (sparse far crickets + thin airy whistle). Two different takes
    left/right = wide stereo. Crossfades 0.25 s at cuts. Never a low drone (user rule).
-   Scene `"ambience": "night"|"day"|"indoor"|"eerie"|false`; project `"ambience": false`; level `mix.ambience` (0.07).
+   `snow` = winter outdoors (airy wind swells + faint snow hiss, no insects/birds: use it for any winter/snow scene,
+   crickets in a snowy night sound fake). Custom location ids have no default bed: set `ambience` on those scenes.
+   Scene `"ambience": "night"|"day"|"indoor"|"eerie"|"snow"|false`; project `"ambience": false`; level `mix.ambience` (0.07).
 3. **Foley** (automatic, `tools/foley.js`): a sound for every visible action, frame-timed from the same motion
    the engine draws — footsteps on each heel strike (`step_soft`, lighter `step_tiny` for Nan/Pip), `hop_up` +
    `land`, `take_pop`/`take_double` on takes, `cloth` on big arm moves, `swish_small` on turns, plus fx

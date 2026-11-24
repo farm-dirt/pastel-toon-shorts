@@ -215,6 +215,19 @@ def amb_eerie(rng, d):
     return out
 
 
-AMBIENCE = {'night': amb_night, 'day': amb_day, 'indoor': amb_indoor, 'eerie': amb_eerie}
+def amb_snow(rng, d):
+    """Winter outdoors (no insects, no birds): soft airy wind that swells and fades, a faint high snow hiss.
+    Mid/high band only, so it never becomes a low drone (user rule)."""
+    t = _t(d); out = bp(_n(rng, d), 2500, 9000) * 0.12                     # fine snow hiss
+    w = bp(_n(rng, d), 500, 2200)
+    sw = 0.35 + 0.65 * np.clip(np.sin(2 * np.pi * 0.09 * t + rng.uniform(0, 6)) * 0.6 + np.sin(2 * np.pi * 0.23 * t + rng.uniform(0, 6)) * 0.4, 0, 1)
+    out += w * sw * 0.5
+    at = rng.uniform(1.0, 3.0)
+    while at < d:                                                         # occasional soft gust
+        g = gust(rng) * 0.35; place(out, g, at); at += rng.uniform(4.0, 8.0)
+    return out
+
+
+AMBIENCE = {'night': amb_night, 'day': amb_day, 'indoor': amb_indoor, 'eerie': amb_eerie, 'snow': amb_snow}
 # location -> bed; scene "ambience": "<bed>" or false overrides; mood eerie/dark/danger at night -> eerie
 LOC_BED = {'park': 'day', 'street': 'day', 'shop': 'indoor', 'kitchen': 'indoor', 'night': 'night'}
