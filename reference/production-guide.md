@@ -72,3 +72,26 @@ Copy to the user's connected folder at the end (and the preview folder at Phase 
 resolution, fps, frame count = round(dur×30), duration = voice ±0.1 s, H.264/yuv420p, AAC present,
 −14 LUFS ±1.5, true peak ≤ −1 dBFS, no black frames, no frozen stretch > 1.5 s; plus eyeball
 `scenes/contact_sheet.jpg` (consistency, readability, safe zones).
+
+
+## Sound layers (Nov 2026 upgrade) — every short has five layers, quietest first
+1. **Room tone** (automatic): never digital silence.
+2. **Ambience** (automatic, `tools/sfxlib.py`): a quiet world under each scene by location — `night` = crickets
+   + air, `park`/`street` = sparse birds + air, `shop`/`kitchen` = room air + soft clock, night scenes with mood
+   dark/eerie/danger (or tone dark) = `eerie` (sparse far crickets + thin airy whistle). Two different takes
+   left/right = wide stereo. Crossfades 0.25 s at cuts. Never a low drone (user rule).
+   Scene `"ambience": "night"|"day"|"indoor"|"eerie"|false`; project `"ambience": false`; level `mix.ambience` (0.07).
+3. **Foley** (automatic, `tools/foley.js`): a sound for every visible action, frame-timed from the same motion
+   the engine draws — footsteps on each heel strike (`step_soft`, lighter `step_tiny` for Nan/Pip), `hop_up` +
+   `land`, `take_pop`/`take_double` on takes, `cloth` on big arm moves, `swish_small` on turns, plus fx
+   (exclaim→`pop_in`, question→`boop_q`, sparkle/hearts/confetti→`twinkle`, puff/dust→`poof`, impact→`impact_soft`,
+   debris→`clatter`, focuslines→`reveal_swell` that peaks on the reveal, speedlines/punch→`swish`), transitions
+   (whip→`whip_air`, pop→`pop_in`, iris→`iris_bloop`, wipe→`swish`) and big springy camera pushes. Each hit gets
+   a tiny random pitch (no machine-gun repeats) and is **panned to where it is on screen**. fx/transition foley
+   steps aside when a hand-placed cue is within 0.12 s; body foley always plays.
+   Check with `node tools/foley.js DIR --report`. Off: project/scene/actor `"foley": false`. Level `mix.foley` (0.55).
+4. **Story accents** (hand-placed `sfx` cues): the scare, the reveal, the creature, the clue — plus 2-4 custom
+   sounds made for this short. These carry the story; foley carries the body.
+5. **Music** (unchanged levels, ducks under the voice).
+The mix is now **stereo** (voice and music centred). Cue options: `pan` (-1..1) and `pitch` (semitones) work on
+hand-placed cues too. All foley/ambience sounds are usable by name in `sfx` cues (`audio.py --list`).

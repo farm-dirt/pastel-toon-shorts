@@ -12,7 +12,7 @@ def main():
         os.makedirs(os.path.join(P, d), exist_ok=True)
     pj = os.path.join(P, 'project-files', 'project.json')
     if not os.path.exists(pj):
-        json.dump({'id': slug, 'slug': slug, 'title': title, 'fps': 30, 'voice': 'voice.mp3',
+        json.dump({'id': slug, 'slug': slug, 'title': title, 'fps': 60, 'voice': 'voice.mp3',
                    'captionY': 400, 'music': {'on': True, 'bpm': 112, 'key': 0, 'stops': []},
                    'mix': {'music': 0.08, 'musicPause': 0.14, 'sfx': 0.35},
                    'sfx': [], 'scenes': []}, open(pj, 'w'), indent=2)

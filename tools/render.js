@@ -11,7 +11,7 @@ const P = path.resolve(args[0]);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const data = fs.readFileSync(path.join(P, 'preview', 'data.js'), 'utf8');
 const proj = JSON.parse(data.replace(/^window\.PROJECT = /, '').replace(/;\s*$/, ''));
-const FPS = proj.fps || 30, DUR = proj.timing.dur;
+const FPS = +opt('--fps', proj.fps || 60), DUR = proj.timing.dur;   // 60 fps default (smooth motion, Nov 2026)
 const NF = Math.round(DUR * FPS);
 const f0 = Math.round(+opt('--from', 0) * FPS), f1 = Math.min(NF, Math.round(+opt('--to', DUR) * FPS));
 const workers = Math.max(1, Math.min(+opt('--workers', os.cpus().length), 4));

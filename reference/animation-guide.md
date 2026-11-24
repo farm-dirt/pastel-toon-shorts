@@ -35,6 +35,24 @@ Every actor now gets these for free. Turn them off per actor with `"life": false
 - **Smears:** an actor moving faster than ~1400 px/s leaves two faint ghosts (`"smear": false` to skip).
 - **Moving hold:** a shot with 0-1 camera keys slowly pushes in 2.5 % over the shot (`"drift": false` or a number).
 
+## Smooth motion upgrade (Nov 2026, user request: "make it fluid, not low quality")
+All automatic; the art style is untouched. Turn any part off only if a scene needs it.
+- **60 fps** is the default for new projects (`"fps": 60`); render ~3.2 s per second of video on 2 CPUs.
+  Old projects keep their own `fps`; `render.js --fps 60` overrides for one render (qa expects the project's fps).
+- **Flow keys** (`"flow": false` on the project = old behaviour): a move that passes THROUGH a key keeps its
+  speed instead of stopping at every key. Positions and times at each key are unchanged and nothing overshoots.
+  A hold (same value twice) still holds; first/last moves still ease in/out. A key with an explicit `ease`
+  keeps that ease. So: key a walk or camera move with several keys and it glides as one motion.
+- **Walks:** arms swing against the legs (skipped when an arm is raised above ~1.1 rad, e.g. holding something),
+  the body leans into the walk, the head bobs a beat late, and the stride grows/shrinks with speed so legs
+  never pop at the start or end. After a walk ends the body settles back with a small weight shift.
+- **Listeners:** when one actor does a `take`, the others in the shot glance toward them ~0.12 s later, flinch a
+  little and ease back. A keyed face/look/take near that moment always wins. `"listen": false` on actor/scene.
+- **Idle weight shift:** standing characters sway their weight very slowly (on top of breathing).
+- **Camera float:** a few-pixel breathing drift on every shot (`"handheld": 0` off, `2` for chaos beats).
+- **Cut settle:** softened to 2.5 % over 0.45 s (the old 6 %/0.25 s read as a jolt on every cut).
+- Props accept `"z"` to set draw order (e.g. plates `z` above a table).
+
 ## Takes (reactions) — use these for every big reaction
 `{"t": 2.05, "take": "shock"}` = anticipation (squash + squint, 5 frames before t) → accent at t (stretch, eye pop,
 small hop) → springy settle, and the face switches to `shock`. Any face name works (`happy`, `angry`, `worried`…);

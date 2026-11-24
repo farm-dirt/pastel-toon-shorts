@@ -124,11 +124,12 @@
     const legs = side ? [-1, 1] : [-1, 1];
     for (const sgn of legs) {
       let ang, knee;
+      const standAng = sgn * P.legSpread * (side ? 0.3 : 1);
       if (walk !== null && walk !== undefined) {
-        const ph = walk + (sgn > 0 ? 0 : Math.PI);
-        ang = 0.42 * Math.sin(ph);
-        knee = Math.max(0, -Math.cos(ph)) * 0.55;
-      } else { ang = sgn * P.legSpread * (side ? 0.3 : 1); knee = 0; }
+        const ph = walk + (sgn > 0 ? 0 : Math.PI), k = P.stride ?? 1;   // stride 0..1 blends standing -> full step
+        ang = lerp(standAng, 0.42 * Math.sin(ph), k);
+        knee = Math.max(0, -Math.cos(ph)) * 0.55 * k;
+      } else { ang = standAng; knee = 0; }
       const hx = side ? sgn * hipX * 0.25 : sgn * hipX;
       const L1 = legLen * 0.52, L2 = legLen * 0.5;
       const kx = hx + Math.sin(ang) * L1, ky = hipY + Math.cos(ang) * L1;

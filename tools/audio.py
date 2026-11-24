@@ -99,6 +99,12 @@ def sfx_record_scratch():
 
 SFX = {k[4:]: v for k, v in globals().items() if k.startswith('sfx_')}
 
+# ---------------- Synthesized foley + ambience library (tools/sfxlib.py, Nov 2026) ----------------
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import sfxlib  # noqa: E402
+for _name, _fn in sfxlib.FOLEY.items():
+    SFX.setdefault(_name, (lambda f=_fn: f(rng)))
+
 # ---------------- Recorded SFX (user's own library) ----------------
 # Any WAV/MP3 in <engine>/assets/sfx/ is usable by its file name (e.g. paper_rip.wav -> "paper_rip").
 # A recorded sound with the same name as a synth one replaces it; the synth stays as "<name>_synth".
@@ -124,7 +130,10 @@ if os.path.isdir(SFX_DIR):
 
 
 def shape_cue(s, cue):
-    """Apply optional cue options: dur (cut length, s), fadeIn / fadeOut (s)."""
+    """Apply optional cue options: pitch (semitones, +/-), dur (cut length, s), fadeIn / fadeOut (s)."""
+    if cue.get('pitch'):
+        r = 2 ** (cue['pitch'] / 12); idx = np.arange(0, len(s) - 1, r)
+        s = np.interp(idx, np.arange(len(s)), s)
     if cue.get('dur'):
         s = s[:int(cue['dur'] * SR)]
     s = s.copy()
@@ -270,18 +279,59 @@ def main():
     unknown = [c['name'] for c in proj.get('sfx', []) if c['name'] not in SFX]
     if unknown:
         sys.exit('!! unknown sfx: %s -> available: %s' % (', '.join(sorted(set(unknown))), ', '.join(sorted(SFX))))
-    for cue in proj.get('sfx', []):
+    # ---- automatic foley (tools/foley.js): a sound for every visible action, panned to where it is on screen ----
+    cues = [dict(c) for c in proj.get('sfx', [])]
+    if proj.get('foley', True) is not False:
+        try:
+            out = subprocess.run(['node', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'foley.js'), P],
+                                 capture_output=True, text=True, check=True).stdout
+            auto = json.loads(out or '[]')
+            for c in auto: c['gain'] = c.get('gain', 1.0) * mixcfg.get('foley', 0.55)
+            cues += auto
+            print(f'foley: {len(auto)} automatic sounds (steps, takes, cloth, landings, fx, transitions)')
+        except Exception as e:  # never block a mix on foley
+            print('!! foley skipped:', str(e).splitlines()[-1] if str(e) else e)
+    fxL = np.zeros(len(voice)); fxR = np.zeros(len(voice))
+    for cue in cues:
         name = cue['name']
         s = shape_cue(SFX[name](), cue); s = s / (np.abs(s).max() + 1e-9) * vpk * mixcfg['sfx'] * cue.get('gain', 1.0)
-        i = int(cue['t'] * SR); fx[i:i + len(s)] += s[:max(0, len(fx) - i)]
+        # constant-power pan, centre = same level as the old mono mix
+        pan = max(-1.0, min(1.0, cue.get('pan', 0.0))); a = (pan + 1) * np.pi / 4
+        gl, gr = np.cos(a) * np.sqrt(2), np.sin(a) * np.sqrt(2)
+        i = int(cue['t'] * SR); n = max(0, min(len(s), len(fxL) - i))
+        fxL[i:i + n] += s[:n] * gl; fxR[i:i + n] += s[:n] * gr
+    # ---- ambience: a quiet world under each scene (crickets at night, birds outside, a room + clock indoors) ----
+    ambL = np.zeros(len(voice)); ambR = np.zeros(len(voice))
+    if proj.get('ambience', True) is not False:
+        sc = proj['scenes']; sc[0]['start'] = 0.0; sc[-1]['end'] = dur
+        beds = {}
+        for s_ in sc:
+            b = s_.get('ambience', None)
+            if b is False: continue
+            if b is None:
+                b = sfxlib.LOC_BED.get(s_.get('location'))
+                if b == 'night' and (s_.get('mood') in ('dark', 'eerie', 'danger') or proj.get('tone') == 'dark'): b = 'eerie'
+            if b not in sfxlib.AMBIENCE: continue
+            beds.setdefault(b, []).append((s_['start'], s_['end']))
+        lvl = vr * mixcfg.get('ambience', 0.07)
+        for b, spans in beds.items():
+            g = np.zeros(len(voice)); xf = int(0.25 * SR)
+            for a0, a1 in spans:
+                i0, i1 = int(a0 * SR), min(len(voice), int(a1 * SR)); g[i0:i1] = 1.0
+            g = np.convolve(g, np.ones(xf) / xf, mode='same')        # 0.25 s crossfade at cuts
+            for side, seed in ((ambL, 11), (ambR, 29)):                # two different takes = a wide stereo world
+                x = sfxlib.AMBIENCE[b](np.random.default_rng(seed + len(b)), dur + 0.1)[:len(voice)]
+                side += x / rms(x) * lvl * g
+        if beds: print('ambience:', ', '.join(f'{b} ({len(v)} scenes)' for b, v in beds.items()))
     # room tone ~ -34 dB under the voice: inaudible under speech, but pauses never go to dead air
-    mix = voice + bed + fx + room_tone(len(voice), vr * mixcfg.get('roomTone', 0.02))
+    centre = voice + bed + room_tone(len(voice), vr * mixcfg.get('roomTone', 0.02))
+    mix = np.stack([centre + fxL + ambL, centre + fxR + ambR], axis=1)
     os.makedirs(os.path.join(P, 'audio'), exist_ok=True)
     tmp = os.path.join(P, 'audio', 'mix_raw.wav')
     pcm = np.clip(mix / max(1.0, np.abs(mix).max()), -1, 1)
     import wave
     with wave.open(tmp, 'wb') as w:
-        w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes((pcm * 32767).astype(np.int16).tobytes())
+        w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes((pcm * 32767).astype(np.int16).tobytes())
     # loudness: measure, one linear gain to -14 LUFS, then true-peak limiter
     o = subprocess.run(['ffmpeg', '-hide_banner', '-i', tmp, '-af', 'ebur128', '-f', 'null', '-'], capture_output=True, text=True).stderr
     I = float(re.findall(r'I:\s+(-?[\d.]+) LUFS', o)[-1])
@@ -291,7 +341,7 @@ def main():
                     '-ar', '48000', '-ac', '2', out], check=True)
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', out, '-b:a', '160k', os.path.join(P, 'audio', 'mix.mp3')], check=True)
     os.remove(tmp)
-    print(f'mix ok  dur={dur:.2f}s  measured {I:.1f} LUFS -> gain {gain:+.1f} dB  sfx={len(proj.get("sfx", []))}')
+    print(f'mix ok  dur={dur:.2f}s  stereo  measured {I:.1f} LUFS -> gain {gain:+.1f} dB  sfx={len(proj.get("sfx", []))} + foley')
 
 
 if __name__ == '__main__':

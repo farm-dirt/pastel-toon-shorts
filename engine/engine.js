@@ -25,6 +25,51 @@
 
   // Interpolate a list of keyframes [{t, ...props, ease}] at time t (seconds, scene-local).
   // Numbers and number-arrays glide; strings/bools switch at the key time.
+  // FLOW (default on, project "flow": false = old behaviour): a move that passes THROUGH a key keeps
+  // its speed instead of stopping dead at every key (the "robot" stop-start look). Each channel is a
+  // monotone cubic (Fritsch-Carlson) through the same key values, so positions and timing at every key
+  // are unchanged and nothing ever overshoots a key. A hold (same value twice) still holds; the first and
+  // last move of a channel still ease in and out exactly like 'inout'. Keys with an explicit "ease"
+  // (back, spring, snap, out, in, linear, inout, backinout) keep that ease for their segment.
+  let FLOW = true;
+  const FLOWC = new WeakMap();
+  function flowTracks(keys, base) {
+    let c = FLOWC.get(keys); if (c) return c;
+    c = {};
+    const chans = new Set();
+    for (const k of keys) for (const p in k) if (p !== 't' && p !== 'ease' && (typeof k[p] === 'number' || Array.isArray(k[p]))) chans.add(p);
+    for (const p of chans) {
+      // value of p "after key k" under the classic carry-forward rules
+      const V = []; let cur = base && p in base ? base[p] : undefined;
+      for (const k of keys) { if (p in k) cur = k[p]; V.push(cur); }
+      const firstDef = V.find((v) => v !== undefined);
+      for (let k = 0; k < V.length; k++) if (V[k] === undefined) V[k] = firstDef;
+      const dims = Array.isArray(firstDef) ? firstDef.length : 0;
+      const comp = (v, j) => (dims ? (Array.isArray(v) && typeof v[j] === 'number' ? v[j] : NaN) : (typeof v === 'number' ? v : NaN));
+      const M = [];
+      for (let j = 0; j < Math.max(1, dims); j++) {
+        const y = V.map((v) => comp(v, j)), n = y.length, m = new Array(n).fill(0);
+        for (let k = 1; k < n - 1; k++) {
+          const flowIn = !keys[k].ease, flowOut = !keys[k + 1].ease;      // both neighbouring segments use flow
+          if (!flowIn || !flowOut) continue;
+          const h0 = keys[k].t - keys[k - 1].t, h1 = keys[k + 1].t - keys[k].t;
+          if (h0 <= 1e-6 || h1 <= 1e-6 || !isFinite(y[k - 1] + y[k] + y[k + 1])) continue;
+          const d0 = (y[k] - y[k - 1]) / h0, d1 = (y[k + 1] - y[k]) / h1;
+          if (d0 * d1 <= 0) continue;                                       // turning point or hold: stop here
+          const w1 = 2 * h1 + h0, w2 = h1 + 2 * h0;
+          m[k] = (w1 + w2) / (w1 / d0 + w2 / d1);                           // weighted harmonic mean: no overshoot
+        }
+        M.push(m);
+      }
+      c[p] = { V, M, dims };
+    }
+    FLOWC.set(keys, c);
+    return c;
+  }
+  function hermite(y0, y1, m0, m1, h, u) {
+    const u2 = u * u, u3 = u2 * u;
+    return (2 * u3 - 3 * u2 + 1) * y0 + (u3 - 2 * u2 + u) * h * m0 + (-2 * u3 + 3 * u2) * y1 + (u3 - u2) * h * m1;
+  }
   function sampleKeys(keys, t, base) {
     const out = Object.assign({}, base || {});
     if (!keys || !keys.length) return out;
@@ -35,8 +80,19 @@
     if (t < keys[0].t) { for (const p in keys[0]) if (p !== 't' && p !== 'ease') out[p] = keys[0][p]; return out; }
     const a = keys[i], b = keys[i + 1];
     if (!b || t <= a.t) return out;
+    const h = Math.max(1e-6, b.t - a.t), raw = clamp01((t - a.t) / h);
+    if (FLOW && !b.ease && keys.length > 2) {
+      const tr = flowTracks(keys, base);
+      for (const p in b) {
+        if (p === 't' || p === 'ease' || !tr[p]) continue;
+        const T = tr[p], y0 = T.V[i], y1 = T.V[i + 1];
+        if (!T.dims) { if (typeof y0 === 'number' && typeof y1 === 'number') out[p] = hermite(y0, y1, T.M[0][i], T.M[0][i + 1], h, raw); }
+        else if (Array.isArray(y0) && Array.isArray(y1)) out[p] = y1.map((v, j) => (typeof v === 'number' && typeof y0[j] === 'number' ? hermite(y0[j], v, T.M[j][i], T.M[j][i + 1], h, raw) : v));
+      }
+      return out;
+    }
     const e = EASE[b.ease || 'inout'] || EASE.inout;
-    const u = e(clamp01((t - a.t) / Math.max(1e-6, b.t - a.t)));
+    const u = e(raw);
     for (const p in b) {
       if (p === 't' || p === 'ease') continue;
       const va = p in out ? out[p] : b[p], vb = b[p];
@@ -59,7 +115,12 @@
   function cameraAt(scene, lt, project) {
     const cam = sampleKeys(scene.camera, lt, { x: 540, y: 960, zoom: 1, roll: 0 });
     // settle-in: tiny 6% push that eases out in the first 0.25 s of every shot (adds life to cuts)
-    if (scene.settle !== false) cam.zoom *= 1 + 0.06 * Math.pow(1 - clamp01(lt / 0.25), 2);
+    // (softened Nov 2026: 6 % in 0.25 s read as a jolt on every cut; now 2.5 % over 0.45 s)
+    if (scene.settle !== false) cam.zoom *= 1 + 0.025 * Math.pow(1 - clamp01(lt / 0.45), 3);
+    // camera float: a barely-there breathing drift (a few px) so held shots feel filmed, not frozen.
+    // project/scene "handheld": 0 turns it off, 2 doubles it (chaos beats).
+    const hh = scene.handheld ?? project.handheld ?? 1;
+    if (hh) { const gt = scene.start + lt; cam.x += 4 * hh * noise1(gt * 0.33, 7); cam.y += 3 * hh * noise1(gt * 0.29, 9); cam.roll = (cam.roll || 0) + 0.18 * hh * noise1(gt * 0.25, 11); }
     // moving hold: a shot with no camera move slowly pushes in (2.5 % over the shot) so it never sits dead
     const sdur = (scene.end - scene.start) || 1;
     if ((!scene.camera || scene.camera.length <= 1) && scene.drift !== false && project.drift !== false)
@@ -159,9 +220,29 @@
     if (st.walk) {
       const xs = (keys[0] && keys[0].x) ?? st.x;
       pose.walk = Math.abs(st.x - xs) / (st.h * 0.075);
-      pose.hop = (pose.hop || 0) + Math.abs(Math.sin(pose.walk)) * st.h * 0.012;
       pose.facing = pose.facing ?? (st.x >= xs ? 1 : -1);
       if (!pose.view) pose.view = 'side';
+      // stride grows with speed and shrinks to standing as the walk slows (no leg pop at start/stop)
+      const stride = lively ? EASE.inout(clamp01(Math.abs(vx) / (st.h * 0.28))) : 1;
+      pose.stride = stride;
+      pose.hop = (pose.hop || 0) + Math.abs(Math.sin(pose.walk)) * st.h * 0.012 * stride;
+      if (lively) {
+        // arms swing against the legs, unless the arm is raised / holding something (angle > 1.1)
+        const sw = 0.36 * Math.sin(pose.walk) * stride;
+        for (const [ch, sg] of [['armR', 1], ['armL', -1]]) {
+          const a = pose[ch] || [0.2, 0.1];
+          if (a[0] < 1.1) pose[ch] = [a[0] + sg * sw, a[1] + 0.22 * stride + 0.12 * Math.max(0, sg * sw)];
+        }
+        pose.lean = (pose.lean || 0) + 0.05 * stride;                         // lean into the walk
+        pose.headTilt = (pose.headTilt || 0) + 0.018 * Math.sin(pose.walk * 2 + 0.6) * stride;   // head bobs a beat late
+      }
+    } else if (lively) {
+      // stopping: a small settle back after a walk ends (weight comes to rest)
+      const wk = keys.filter((k) => 'walk' in k);
+      for (let j = 1; j < wk.length; j++) if (wk[j - 1].walk && !wk[j].walk) {
+        const tau = lt - wk[j].t;
+        if (tau >= 0 && tau < 0.8) pose.lean = (pose.lean || 0) - 0.045 * Math.exp(-5 * tau) * Math.sin(9 * tau + 0.4);
+      }
     }
     if (lively) {
       // ---- squash & stretch from the hop (stretch while flying, squash on landing) ----
@@ -199,6 +280,27 @@
     // ---- idle life: slow breathing + slow head drift (no fast sines -> no twitch) ----
     pose.squash = (pose.squash || 1) * (1 + 0.012 * Math.sin(gt * 2.1 + seed));
     pose.headTilt = (pose.headTilt || 0) + 0.035 * Math.sin(gt * 1.3 + seed);
+    if (lively && !st.walk) pose.lean = (pose.lean || 0) + 0.012 * Math.sin(gt * 0.7 + seed * 1.7);   // slow weight shift
+    // ---- listeners: when someone else in the shot does a take, the others notice a beat later ----
+    // (eyes snap toward them, a tiny flinch, then they ease back). Skipped if this actor has its own
+    // key near that moment, so a keyed reaction always wins. Scene/actor "listen": false turns it off.
+    if (lively && actor.listen !== false && scene.listen !== false) {
+      (scene.actors || []).forEach((o, j) => {
+        if (j === idx || o.who === actor.who) return;
+        for (const k of prepKeys(o)) {
+          if (!k.take) continue;
+          const d = lt - k.t - 0.12; if (d < 0 || d > 1.7) continue;
+          if (keys.some((m) => Math.abs(m.t - k.t) < 0.45 && (m.take || 'face' in m || 'look' in m))) continue;
+          const ox = sampleKeys(o.keys, k.t, o).x ?? 540, dir = Math.sign(ox - st.x) || 1, fac = pose.facing ?? 1;
+          const env = EASE.out(clamp01(d / 0.12)) * (1 - EASE.inout(clamp01((d - 1.1) / 0.6)));
+          const lk = pose.look || [0, 0];
+          pose.look = [lk[0] + (0.55 * dir * fac - lk[0] * 0.6) * env, lk[1] - 0.1 * env];
+          pose.headTilt = (pose.headTilt || 0) + 0.05 * dir * fac * env;
+          if (d < 0.3) pose.squash = (pose.squash || 1) * (1 - 0.035 * Math.sin(d / 0.3 * Math.PI));
+          pose.eyeScale = (pose.eyeScale || 1) * (1 + 0.08 * env);
+        }
+      });
+    }
     // ---- blinks: forced on expression/facing changes (hides the swap), hashed idle blinks, some doubles ----
     let blink = 0;
     if (lively) {
@@ -395,7 +497,7 @@
     });
     (scene.props || []).forEach((p) => {
       const st = sampleKeys(p.keys, lt, p);
-      if (st.hold) held.push({ p, st }); else items.push({ y: st.y ?? GROUND, kind: 'prop', p, st });
+      if (st.hold) held.push({ p, st }); else items.push({ y: st.y ?? GROUND, z: st.z, kind: 'prop', p, st });   // optional z = draw order
     });
     items.sort((A, B) => (A.z ?? A.y) - (B.z ?? B.y));
     for (const it of items) {
@@ -580,6 +682,7 @@
   }
   function renderFrame(ctx, project, t) {
     PT._heads = [];
+    FLOW = project.flow !== false;
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
     const S = project.scenes, i = sceneAt(project, t), sc = S[i];
@@ -649,5 +752,5 @@
     return out;
   }
 
-  Object.assign(PT, { lint, EASE, sampleKeys, renderFrame, sceneAt, PROPS, drawFX, envAt });
+  Object.assign(PT, { lint, EASE, sampleKeys, renderFrame, sceneAt, PROPS, drawFX, envAt, cameraAt, prepKeys, landings, setFlow: (v) => { FLOW = v !== false; } });
 })(typeof window !== 'undefined' ? window : globalThis);
