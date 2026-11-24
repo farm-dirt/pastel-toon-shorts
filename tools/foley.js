@@ -84,7 +84,9 @@ for (const sc of scenes) {
       speedlines: ['swish', 0.55], punch: ['swish', 0.45] };
     if (map[f.type]) add(T, map[f.type][0], map[f.type][1], pan, { fx: 1 });
     if (f.type === 'focuslines') add(T - 0.55, 'reveal_swell', 0.6, 0, { fx: 1 });
-    if (f.type === 'shake' && !(sc.fx || []).some((g) => (g.type === 'impact' || g.type === 'debris') && Math.abs(g.t - f.t) < 0.1))
+    // only a real hit gets a thump: strong (amp >= 25) and short (<= 0.8 s). Handheld wobble (many small
+    // repeated shakes, e.g. POV shots) and long trembles stay silent.
+    if (f.type === 'shake' && (f.amp ?? 45) >= 25 && (f.dur ?? 0.5) <= 0.8 && !(sc.fx || []).some((g) => (g.type === 'impact' || g.type === 'debris') && Math.abs(g.t - f.t) < 0.1))
       add(T, 'impact_soft', 0.5 * Math.min(1.4, (f.amp || 45) / 45), 0, { fx: 1 });
   }
   // ---- transitions ----
